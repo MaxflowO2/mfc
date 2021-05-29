@@ -2,17 +2,18 @@ package main
 
 import (
 	"bytes"
-	"golang.org/x/crypto/sha3"
 	"fmt"
 	"math"
 	"math/big"
+
+	"golang.org/x/crypto/sha3"
 )
 
 var (
 	maxNonce = math.MaxInt64
 )
 
-const targetBits = 18
+const targetBits = 12
 
 // ProofOfWork represents a proof-of-work
 type ProofOfWork struct {
@@ -55,7 +56,7 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 	for nonce < maxNonce {
 		data := pow.prepareData(nonce)
 
-		hash = sha3.Sum256(data)
+		hash =sha3.Sum256(data)
 		fmt.Printf("\r%x", hash)
 		hashInt.SetBytes(hash[:])
 
