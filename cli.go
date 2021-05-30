@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 // CLI responsible for processing command line arguments
@@ -15,7 +16,8 @@ type CLI struct {
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  addblock -data BLOCK_DATA - add a block to the blockchain")
+	fmt.Println("  addblock -data BLOCK_DATA - add a block to the blockchain every 10 seconds")
+	fmt.Println("  autogen")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
 }
 
@@ -27,7 +29,11 @@ func (cli *CLI) validateArgs() {
 }
 
 func (cli *CLI) addBlock(data string) {
-	cli.bc.AddBlock(data)
+        cli.bc.AddBlock(data)
+        fmt.Println("Success!")
+}
+func (cli *CLI) autoGen(t time.Time) {
+	cli.bc.AddBlock("null af")
 	fmt.Println("Success!")
 }
 
@@ -56,7 +62,7 @@ func (cli *CLI) Run() {
 
 	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-
+	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
 	addBlockData := addBlockCmd.String("data", "", "Block data")
 
 	switch os.Args[1] {
@@ -65,6 +71,11 @@ func (cli *CLI) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
+        case "autogen":
+                err := autoGen.Parse(os.Args[2:])
+                if err != nil {
+                        log.Panic(err)
+                }
 	case "printchain":
 		err := printChainCmd.Parse(os.Args[2:])
 		if err != nil {
@@ -83,6 +94,9 @@ func (cli *CLI) Run() {
 		cli.addBlock(*addBlockData)
 	}
 
+	if autoGen.Parsed() {
+	        doEvery(15*time.Second, cli.autoGen)
+	}
 	if printChainCmd.Parsed() {
 		cli.printChain()
 	}
