@@ -16,10 +16,11 @@
 package main
 
 func main() {
-	bc := NewBlockchain()
-	defer bc.db.Close()
+//	bc := NewBlockchain()
+//	defer bc.db.Close()
 
-	cli := CLI{bc}
-	cli.Run()
+//	cli := CLI{bc}
+//	cli.Run()
+	nullTransaction()
 }
 
