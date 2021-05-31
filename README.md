@@ -7,6 +7,8 @@ Block<br>
 Blockchain<br>
 Database<br>
 Bare bones Smart Contract language<br>
+Keygen<br>
+Transaction - bare bones<br>
 
 If you use the Makefile, should compile as of now (will actually roll this into a version).<br>
 
