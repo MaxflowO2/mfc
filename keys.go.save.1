@@ -11,7 +11,15 @@ import (
  	"math/big"
  	"os"
 )
+func privKey(){
+	pubkeyCurve := elliptic.P256()
+	privatekey := new(ecdsa.PrivateKey)
+	privatekey, err := ecdsa.GenerateKey(pubkeyCurve, rand.Reader)
 
+	if err != nil{
+		fmt.Println(err)
+		os.Exit(1)
+	}
 func keys() {
 	// see http://golang.org/pkg/crypto/elliptic/#P256
  	pubkeyCurve := elliptic.P256() 
