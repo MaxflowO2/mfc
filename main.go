@@ -21,5 +21,6 @@ func main() {
 
 	cli := CLI{bc}
 	cli.Run()
+	// removed test
 }
 
