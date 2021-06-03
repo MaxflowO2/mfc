@@ -18,6 +18,8 @@ package main
 import (
 	"crypto/ed25519"
 	"fmt"
+	"encoding/json"
+	"io/ioutil"
 )
 
 type MFCKeys struct{
@@ -25,7 +27,7 @@ type MFCKeys struct{
 	PrivateKey ed25519.PrivateKey
 }
 
-func KeyGen() {
+func KeyGen() MFCKeys {
 	pub, priv, _ := ed25519.GenerateKey(nil)
 
 	// now in struct
@@ -34,13 +36,20 @@ func KeyGen() {
 		PrivateKey: priv,
 	}
 
-//	fmt.Println("Public Key:")
-//	fmt.Printf("%x\n", yours.PublicKey)
-//	fmt.Printf("%T\n", yours.PublicKey)
-//	fmt.Println("Private Key:")
-//	fmt.Printf("%x\n", yours.PrivateKey)
-//      fmt.Printf("%T\n", yours.PrivateKey)
+	// Add RETURN of MFCKeys
+	return a
+}
 
-	// Add RETURN
-//	return a
+// Saves Keys to file locally
+func KeySave(mfc MFCKeys) {
+	file, _ := json.MarshalIndent(mfc, "", " ")
+	_ = ioutil.WriteFile("MFCKeys.json", file, 0644)
+}
+
+// Loads Keys from MFCKeys.json
+func LoadKey() MFCKeys {
+	file, _ := ioutil.ReadFile("MFCKeys.json")
+	keys := MFCKeys{}
+	_ = json.Unmarshal([]byte(file), &keys)
+	return keys
 }
