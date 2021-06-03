@@ -14,3 +14,33 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 package main
+
+import (
+	"crypto/ed25519"
+	"fmt"
+)
+
+type MFCKeys struct{
+	PublicKey ed25519.PublicKey
+	PrivateKey ed25519.PrivateKey
+}
+
+func KeyGen() {
+	pub, priv, _ := ed25519.GenerateKey(nil)
+
+	// now in struct
+	a := MFCKeys{
+		PublicKey: pub,
+		PrivateKey: priv,
+	}
+
+//	fmt.Println("Public Key:")
+//	fmt.Printf("%x\n", yours.PublicKey)
+//	fmt.Printf("%T\n", yours.PublicKey)
+//	fmt.Println("Private Key:")
+//	fmt.Printf("%x\n", yours.PrivateKey)
+//      fmt.Printf("%T\n", yours.PrivateKey)
+
+	// Add RETURN
+//	return a
+}

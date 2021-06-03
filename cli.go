@@ -31,8 +31,9 @@ type CLI struct {
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  addblock -data BLOCK_DATA - add a block to the blockchain every 10 seconds")
-	fmt.Println("  autogen")
+	fmt.Println("  addblock -data BLOCK_DATA")
+	fmt.Println("  autogen, creates a block every 15 seconds")
+	fmt.Println("  nulltrans, creates a basic 'null' transaction")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
 }
 
@@ -47,9 +48,14 @@ func (cli *CLI) addBlock(data string) {
         cli.bc.AddBlock(data)
         fmt.Println("Success!")
 }
+
 func (cli *CLI) autoGen(t time.Time) {
-	cli.bc.AddBlock("null af")
+	cli.bc.AddBlock("autogen block")
 	fmt.Println("Success!")
+}
+
+func (cli *CLI) nullTrans() {
+	nullTransaction()
 }
 
 func (cli *CLI) printChain() {
@@ -78,6 +84,7 @@ func (cli *CLI) Run() {
 	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
+	nullTrans := flag.NewFlagSet("nulltrans", flag.ExitOnError)
 	addBlockData := addBlockCmd.String("data", "", "Block data")
 
 	switch os.Args[1] {
@@ -91,6 +98,13 @@ func (cli *CLI) Run() {
                 if err != nil {
                         log.Panic(err)
                 }
+
+        case "nulltrans":
+                err := nullTrans.Parse(os.Args[2:])
+                if err != nil {
+                        log.Panic(err)
+                }
+
 	case "printchain":
 		err := printChainCmd.Parse(os.Args[2:])
 		if err != nil {
@@ -112,6 +126,11 @@ func (cli *CLI) Run() {
 	if autoGen.Parsed() {
 	        Repeat(15*time.Second, cli.autoGen)
 	}
+
+        if nullTrans.Parsed() {
+        	cli.nullTrans()
+        }
+
 	if printChainCmd.Parsed() {
 		cli.printChain()
 	}
