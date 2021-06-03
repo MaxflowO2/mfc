@@ -40,7 +40,7 @@ func KeyGen() MFCKeys {
 	return a
 }
 
-// Saves Keys to file locally
+// Saves Keys to MFCKeys.json
 func KeySave(mfc MFCKeys) {
 	file, _ := json.MarshalIndent(mfc, "", " ")
 	_ = ioutil.WriteFile("MFCKeys.json", file, 0644)
