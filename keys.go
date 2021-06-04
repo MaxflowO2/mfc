@@ -17,7 +17,9 @@ package main
 
 import (
 	"crypto/ed25519"
-	"fmt"
+//	"encoding/hex"
+	"golang.org/x/crypto/sha3"
+//	"fmt"
 	"encoding/json"
 	"io/ioutil"
 )
@@ -26,6 +28,8 @@ type MFCKeys struct{
 	PublicKey ed25519.PublicKey
 	PrivateKey ed25519.PrivateKey
 }
+
+type Address []byte
 
 func KeyGen() MFCKeys {
 	pub, priv, _ := ed25519.GenerateKey(nil)
@@ -53,3 +57,47 @@ func LoadKey() MFCKeys {
 	_ = json.Unmarshal([]byte(file), &keys)
 	return keys
 }
+
+// Generate an address
+func LoadAddress() Address {
+	// loads Keys from MFCKeys.json
+	keys := LoadKey()
+	// sha3/Sum256 hash of Public Key
+	pkhash := sha3.Sum256(keys.PublicKey)
+	// slice of last 20
+	slice := pkhash[12:]
+	return slice
+}
+
+// For random transaction
+func RandomAddress(mfc MFCKeys) Address {
+	pkhash := sha3.Sum256(mfc.PublicKey)
+	slice := pkhash[12:]
+	return slice
+}
+
+//func main() {
+//        loaded := LoadKey()
+//        fmt.Println("Keys loaded from MFCKeys.json")
+//        fmt.Println("Public Key:")
+//        fmt.Printf("%x\n", loaded.PublicKey)
+//        fmt.Printf("%T\n", loaded.PublicKey)
+//        fmt.Println("Private Key:")
+//        fmt.Printf("%x\n", loaded.PrivateKey)
+//        fmt.Printf("%T\n", loaded.PrivateKey)
+//	addy := LoadAddress()
+//	fmt.Println("Address:")
+//	fmt.Printf("%x\n" , addy)
+//	a := KeyGen()
+//	b := KeyGen()
+//	aaddy := RandomAddress(a)
+//	baddy := RandomAddress(b)
+//	fmt.Println("a, priv/pub/addy")
+//	fmt.Printf("%x\n", a.PublicKey)
+//	fmt.Printf("%x\n", a.PrivateKey)
+//	fmt.Printf("%x\n", aaddy)
+//        fmt.Println("b, priv/pub/addy")
+//        fmt.Printf("%x\n", b.PublicKey)
+//        fmt.Printf("%x\n", b.PrivateKey)
+//        fmt.Printf("%x\n", baddy)
+//}//

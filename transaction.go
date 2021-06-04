@@ -21,6 +21,7 @@ import(
         "time"
         "math"
         "math/big"
+	"crypto/ed25519"
 
         "golang.org/x/crypto/sha3"
 )
@@ -106,14 +107,34 @@ func (powT *powTransaction) ValidateTrans() bool {
 }
 // null Transaction for "filling blocks"
 func nullTransaction() *Transaction {
-	nullTransaction := &Transaction{time.Now().Unix(), []byte("null"), []byte("null"), 0, []byte("null"), []byte{}, 0}
+	a := KeyGen()
+	b := KeyGen()
+	sender := RandomAddress(a)
+	receiver := RandomAddress(b)
+	var amount uint64 = 0
+	message := bytes.Join(
+                [][]byte{
+                        sender,
+                        receiver,
+                        IntToHex(int64(amount)),
+                },
+                []byte{},
+        )
+	signed := ed25519.Sign(a.PrivateKey, message)
+	nullTransaction := &Transaction{time.Now().Unix(), sender, receiver, amount, signed, []byte{}, 0}
 	powT := NewPOWTrans(nullTransaction)
 	nonce, hash := powT.RunTrans()
 
 	nullTransaction.Hash = hash[:]
 	nullTransaction.Nonce = nonce
 
-	fmt.Println(nullTransaction)
+	fmt.Printf("Timestamp: %x\n", nullTransaction.Timestamp)
+	fmt.Printf("Sender Address: %x\n", nullTransaction.Sender)
+	fmt.Printf("Receiver Address: %x\n", nullTransaction.Receiver)
+	fmt.Println("Amount: " , nullTransaction.Amount)
+	fmt.Printf("Signtaure:\n%x\n", nullTransaction.Signature)
+	fmt.Printf("Transaction Hash:\n%x\n", nullTransaction.Hash)
+	fmt.Println("Nonce: ", nullTransaction.Nonce)
 	// Println success!
 	return nullTransaction
 }
