@@ -89,7 +89,7 @@ func (powT *powTransaction) RunTrans() (int, []byte) {
                         tnonce++
                 }
         }
-        fmt.Print("\n\n")
+        fmt.Print("\n")
 
         return tnonce, hash[:]
 }
@@ -122,18 +122,19 @@ func nullTransaction() *Transaction {
         )
 	signed := ed25519.Sign(a.PrivateKey, message)
 	nullTransaction := &Transaction{time.Now().Unix(), sender, receiver, amount, signed, []byte{}, 0}
+
+        fmt.Printf("Timestamp: %x\n", nullTransaction.Timestamp)
+        fmt.Printf("Sender Address: %x\n", nullTransaction.Sender)
+        fmt.Printf("Receiver Address: %x\n", nullTransaction.Receiver)
+        fmt.Println("Amount: " , nullTransaction.Amount)
+        fmt.Printf("Signtaure:\n%x\n", nullTransaction.Signature)
+
 	powT := NewPOWTrans(nullTransaction)
 	nonce, hash := powT.RunTrans()
 
 	nullTransaction.Hash = hash[:]
 	nullTransaction.Nonce = nonce
 
-	fmt.Printf("Timestamp: %x\n", nullTransaction.Timestamp)
-	fmt.Printf("Sender Address: %x\n", nullTransaction.Sender)
-	fmt.Printf("Receiver Address: %x\n", nullTransaction.Receiver)
-	fmt.Println("Amount: " , nullTransaction.Amount)
-	fmt.Printf("Signtaure:\n%x\n", nullTransaction.Signature)
-	fmt.Printf("Transaction Hash:\n%x\n", nullTransaction.Hash)
 	fmt.Println("Nonce: ", nullTransaction.Nonce)
 	// Println success!
 	return nullTransaction
