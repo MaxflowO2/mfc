@@ -35,15 +35,17 @@ type Transaction struct {
 	Hash		[]byte
 	Nonce		int
 }
-
+// for PoW FCN
 type powTransaction struct{
 	transaction *Transaction
 	target *big.Int
 }
 
+// for PoW FCN
 var maxTransNonce = math.MaxInt64
 var targetTrans = 8
 
+// for PoW FCN
 func NewPOWTrans (t *Transaction) *powTransaction {
 	target := big.NewInt(1)
 	target.Lsh(target, uint(256-targetTrans))
@@ -53,6 +55,7 @@ func NewPOWTrans (t *Transaction) *powTransaction {
 	return powT
 }
 
+// for PoW FCN
 func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
@@ -70,6 +73,7 @@ func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 	return data
 }
 
+// for PoW FCN
 func (powT *powTransaction) RunTrans() (int, []byte) {
         var hashInt big.Int
         var hash [32]byte
@@ -94,6 +98,7 @@ func (powT *powTransaction) RunTrans() (int, []byte) {
         return tnonce, hash[:]
 }
 
+// for PoW FCN
 func (powT *powTransaction) ValidateTrans() bool {
         var hashInt big.Int
 
@@ -105,12 +110,14 @@ func (powT *powTransaction) ValidateTrans() bool {
 
         return isValid
 }
+
 // null Transaction for "filling blocks"
+// testing only
 func nullTransaction() *Transaction {
 	a := KeyGen()
 	b := KeyGen()
-	sender := RandomAddress(a)
-	receiver := RandomAddress(b)
+	sender := MakeAddress(a)
+	receiver := MakeAddress(b)
 	var amount uint64 = 0
 	message := bytes.Join(
                 [][]byte{
@@ -121,7 +128,12 @@ func nullTransaction() *Transaction {
                 []byte{},
         )
 	signed := ed25519.Sign(a.PrivateKey, message)
-	nullTransaction := &Transaction{time.Now().Unix(), sender, receiver, amount, signed, []byte{}, 0}
+	var signature []byte
+	verify := ed25519.Verify(a.PublicKey, message, signed)
+	if verify == true {
+		signature = signed
+	}
+	nullTransaction := &Transaction{time.Now().Unix(), sender, receiver, amount, signature, []byte{}, 0}
 
         fmt.Printf("Timestamp: %x\n", nullTransaction.Timestamp)
         fmt.Printf("Sender Address: %x\n", nullTransaction.Sender)
@@ -136,7 +148,8 @@ func nullTransaction() *Transaction {
 	nullTransaction.Nonce = nonce
 
 	fmt.Println("Nonce: ", nullTransaction.Nonce)
-	// Println success!
+
 	return nullTransaction
 }
 
+// FCN to add Transaction to Mempool (in the future)

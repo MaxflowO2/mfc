@@ -69,8 +69,8 @@ func LoadAddress() Address {
 	return slice
 }
 
-// For random transaction
-func RandomAddress(mfc MFCKeys) Address {
+// For Make Address w/o loading keys
+func MakeAddress(mfc MFCKeys) Address {
 	pkhash := sha3.Sum256(mfc.PublicKey)
 	slice := pkhash[12:]
 	return slice
