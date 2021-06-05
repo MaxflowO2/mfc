@@ -1,21 +1,61 @@
 How to blockchain 101
-Create a Block
-Block -> Block Chain
-Add POW to Block
-Add Database (Block/Blockchain)
-Create Transaction
-Add POW to Transaction
-Add Transaction to Block
-Add Transaction to Database
-Crypto - Keys
-Signatures
-Keys -> Address 
-Add Address to Transaction
-Add Address to Block // we are now here
-Smart Contracts (Hyperledger)
-Add Contracts to Address
-Add Contracts to Signatures
-Add Contracts to Transactions
-The "UTXO" functions
-The "Mempool" functions
-Network
+
+Block Functions:
+Create a Block // 0.0.1
+Block -> Block Chain // 0.0.1
+Add to Struct:
+	Height - What number is it?
+	Difficulty - What value is it?
+	BlockRewards
+
+POW Function:
+Add POW to Block // 0.0.2
+Add POW to Transaction // 0.0.5
+POW Modification over time
+
+Transaction Functions:
+Create Transaction // 0.0.4
+Add Transaction to Block // (Currently on)
+Add Transaction to Database // (Currently on)
+
+Crypto Functions:
+Keygenesis ed25519 // 0.0.5
+Signatures ed25519 // 0.0.5
+Verify Sig ed25519 globally
+Saving Keys to file // 0.0.6
+Loading Keys from file // 0.0.6
+
+Addressing Functions:
+Addresses // 0.0.5
+Keys -> Address // 0.0.5 (update soon MFCx, prefix done)
+Add Address to Transaction // 0.0.6
+Add Address to Block
+Create Struct for DB
+
+Consensus Function:
+Develop GHOST
+
+Smart Contract/Hyperledger:
+Smart Contracts (Hyperledger) // initiated 0.0.3
+Add Contract Addresses
+
+Database Functions:
+Add Database (Block/Blockchain) // 0.0.3
+Trie/UTXO function
+	CapCoin added - deflationary cryptocurrency
+	Fructose added - inflationary cryptocurrency
+	Glucose added - ATP token
+	MFCxPoS added - PoS Token, ATP generation
+Opimize BoltDB
+	Blocks/Transactions
+	Addresses/UTXO (Trie tree?)
+Punt BoltDB or Keep BoltDB?
+
+Network Functions:
+P2P
+Mempool/txpool upgrade
+
+Other:
+ATP costs
+Parallel Hashing over GHOST
+PoS token (ATP Generation)
