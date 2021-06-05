@@ -16,35 +16,52 @@
 package main
 
 import (
-	"bytes"
-//      "encoding/hex"
-        "golang.org/x/crypto/sha3"
-//        "fmt"
+//	"bytes"
+//	"encoding/hex"
+	"golang.org/x/crypto/sha3"
+//	"fmt"
         "encoding/json"
         "io/ioutil"
 )
 
-// makes an address type
-type Address []byte
+// Struct to be saved to database
+//type MFCAddress struct {
+//	MFCxAddy string
+//	Address []byte
+//	PublicKey ed25519.PublicKey
+//}
 
 // New Address genesis
-func LoadAddress() Address {
+func LoadAddress() []byte {
         file, _ := ioutil.ReadFile("MFCKeys.json")
         keys := MFCKeys{}
         _ = json.Unmarshal([]byte(file), &keys)
-        pkhash := sha3.Sum256(keys.PublicKey)
-	slice := pkhash[12:]
-	mfcx := []byte("MFCx")
-	address :=  bytes.Join([][]byte{mfcx, slice},[]byte{})
-	return address
+	pre := MakeAddress(keys)
+	addy := pre[:]
+	return addy
 }
 
 // For Make Address w/o loading keys
-func MakeAddress(mfc MFCKeys) Address {
-        pkhash := sha3.Sum256(mfc.PublicKey)
-        slice := pkhash[12:]
-        mfcx := []byte("MFCx")
-        address :=  bytes.Join([][]byte{mfcx, slice},[]byte{})
-        return address
+func MakeAddress(mfc MFCKeys) []byte {
+	pre := sha3.Sum256(mfc.PublicKey)
+        addy := pre[:]
+	return addy
 }
 
+// For saving struct to JSON
+//func main() {
+//	mfcx := "MFCx"
+//      file, _ := ioutil.ReadFile("MFCKeys.json")
+//      keys := MFCKeys{}
+//      _ = json.Unmarshal([]byte(file), &keys)
+//	addy := MakeAddress(keys)
+//	addyString := hex.EncodeToString(addy)
+//	mfcxAddy := mfcx + addyString
+//	newMFCAddress := MFCAddress{}
+//	newMFCAddress.MFCxAddy = mfcxAddy
+//	newMFCAddress.Address = addy
+//	newMFCAddress.PublicKey = keys.PublicKey
+//	fmt.Println(newMFCAddress.MFCxAddy)
+//        fmt.Println(newMFCAddress.Address)
+//       fmt.Println(newMFCAddress.PublicKey)
+//}
