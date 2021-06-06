@@ -31,8 +31,8 @@ type CLI struct {
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  addblock -data BLOCK_DATA")
-	fmt.Println("  autogen, creates a block every 15 seconds")
+	fmt.Println("  addblock, with nulltrans")
+	fmt.Println("  autogen, creates a block every 15 seconds with nulltrans")
 	fmt.Println("  nulltrans, creates a basic 'null' transaction")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
 }
@@ -44,14 +44,13 @@ func (cli *CLI) validateArgs() {
 	}
 }
 
-func (cli *CLI) addBlock(data string) {
-        cli.bc.AddBlock(data)
+func (cli *CLI) addBlock() {
+        cli.bc.AddBlock(nullTransaction())
         fmt.Println("Success!")
 }
 
 func (cli *CLI) autoGen(t time.Time) {
-	cli.bc.AddBlock("autogen block")
-	fmt.Println("Success!")
+	cli.bc.AddBlock(nullTransaction())
 }
 
 func (cli *CLI) nullTrans() {
@@ -65,7 +64,7 @@ func (cli *CLI) printChain() {
 		block := bci.Next()
 
 		fmt.Printf("Prev. hash: %x\n", block.PrevBlockHash)
-		fmt.Printf("Data: %s\n", block.Data)
+		fmt.Printf("Transactions: %x\n", block.Transactions)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := NewProofOfWork(block)
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
@@ -85,7 +84,7 @@ func (cli *CLI) Run() {
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
 	nullTrans := flag.NewFlagSet("nulltrans", flag.ExitOnError)
-	addBlockData := addBlockCmd.String("data", "", "Block data")
+//	addBlockData := addBlockCmd.String("data", "", "Block data")
 
 	switch os.Args[1] {
 	case "addblock":
@@ -93,11 +92,11 @@ func (cli *CLI) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
-        case "autogen":
-                err := autoGen.Parse(os.Args[2:])
-                if err != nil {
-                        log.Panic(err)
-                }
+	case "autogen":
+		err := autoGen.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
 
         case "nulltrans":
                 err := nullTrans.Parse(os.Args[2:])
@@ -116,11 +115,7 @@ func (cli *CLI) Run() {
 	}
 
 	if addBlockCmd.Parsed() {
-		if *addBlockData == "" {
-			addBlockCmd.Usage()
-			os.Exit(1)
-		}
-		cli.addBlock(*addBlockData)
+		cli.addBlock()
 	}
 
 	if autoGen.Parsed() {

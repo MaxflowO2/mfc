@@ -20,8 +20,8 @@ import (
 //	"encoding/hex"
 	"golang.org/x/crypto/sha3"
 //	"fmt"
-        "encoding/json"
-        "io/ioutil"
+//	"encoding/json"
+//	"io/ioutil"
 )
 
 // Struct to be saved to database
@@ -31,17 +31,17 @@ import (
 //	PublicKey ed25519.PublicKey
 //}
 
-// New Address genesis
+// LoadAddress()
+// Opens MFCKeys.JSON and returns []byte Address
 func LoadAddress() []byte {
-        file, _ := ioutil.ReadFile("MFCKeys.json")
-        keys := MFCKeys{}
-        _ = json.Unmarshal([]byte(file), &keys)
+	keys := LoadKeys()
 	pre := MakeAddress(keys)
 	addy := pre[:]
 	return addy
 }
 
-// For Make Address w/o loading keys
+// MakeAddress(MFCKeys)
+// Takes MFCKeys {} and returns []byte Address
 func MakeAddress(mfc MFCKeys) []byte {
 	pre := sha3.Sum256(mfc.PublicKey)
         addy := pre[:]

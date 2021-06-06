@@ -135,6 +135,8 @@ func nullTransaction() *Transaction {
 	}
 	nullTransaction := &Transaction{time.Now().Unix(), sender, receiver, amount, signature, []byte{}, 0}
 
+        fmt.Println("**************************************************")
+	fmt.Println("START OF NULL TRANSACTION")
         fmt.Printf("Timestamp: %x\n", nullTransaction.Timestamp)
         fmt.Printf("Sender Address: %x\n", nullTransaction.Sender)
         fmt.Printf("Receiver Address: %x\n", nullTransaction.Receiver)
@@ -148,8 +150,16 @@ func nullTransaction() *Transaction {
 	nullTransaction.Nonce = nonce
 
 	fmt.Println("Nonce: ", nullTransaction.Nonce)
+	fmt.Println("END OF NULL TRANSACTION")
+        fmt.Println("**************************************************")
 
 	return nullTransaction
 }
 
-// FCN to add Transaction to Mempool (in the future)
+// FCN to add Transaction to block
+//func nullTransAdd() {
+//	dataraw := nullTransaction()
+//	dataslice := dataraw[:]
+//	datastring := string(dataslice)
+//	AddBlock(datastring)
+//}

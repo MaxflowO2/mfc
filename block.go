@@ -20,12 +20,13 @@ import (
 	"encoding/gob"
 	"log"
 	"time"
+	"fmt"
 )
 
 // Block keeps block headers
 type Block struct {
 	Timestamp     int64
-	Data          []byte
+	Transactions  *Transaction
 	PrevBlockHash []byte
 	Hash          []byte
 	Nonce         int
@@ -45,8 +46,8 @@ func (b *Block) Serialize() []byte {
 }
 
 // NewBlock creates and returns Block
-func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{}, 0}
+func NewBlock(trans *Transaction, prevBlockHash []byte) *Block {
+	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0}
 	pow := NewProofOfWork(block)
 	nonce, hash := pow.Run()
 
@@ -58,7 +59,18 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 
 // NewGenesisBlock creates and returns genesis Block
 func NewGenesisBlock() *Block {
-	return NewBlock("Genesis Block", []byte{})
+	genesis := &Transaction{}
+	genesis.Timestamp = time.Now().Unix()
+	genesis.Sender = []byte("Alpha-net")
+	genesis.Receiver = []byte("Genesis Block")
+	genesis.Amount = 0
+	genesis.Signature = []byte{}
+	powT := NewPOWTrans(genesis)
+	nonce, hash := powT.RunTrans()
+	genesis.Hash = hash[:]
+	genesis.Nonce = nonce
+        fmt.Println("**************************************************")
+	return NewBlock(genesis, []byte{})
 }
 
 // DeserializeBlock deserializes a block
