@@ -16,23 +16,25 @@
 package main
 
 import (
-//	"bytes"
-//	"encoding/hex"
+	"crypto/ed25519"
+	"encoding/hex"
 	"golang.org/x/crypto/sha3"
-//	"fmt"
-//	"encoding/json"
-//	"io/ioutil"
+	"fmt"
+	"encoding/json"
+	"io/ioutil"
 )
 
-// Struct to be saved to database
-//type MFCAddress struct {
-//	MFCxAddy string
-//	Address []byte
-//	PublicKey ed25519.PublicKey
-//}
+// MFCAddress {}
+// Struct will be used throughout code
+// Will save to DB under Address Basket
+type MFCAddress struct {
+	MFCxAddy string
+	PublicKey ed25519.PublicKey
+}
 
 // LoadAddress()
 // Opens MFCKeys.JSON and returns []byte Address
+// v0.0.8 update to String
 func LoadAddress() []byte {
 	keys := LoadKeys()
 	pre := MakeAddress(keys)
@@ -42,26 +44,27 @@ func LoadAddress() []byte {
 
 // MakeAddress(MFCKeys)
 // Takes MFCKeys {} and returns []byte Address
+// v0.0.8 update to string
 func MakeAddress(mfc MFCKeys) []byte {
 	pre := sha3.Sum256(mfc.PublicKey)
         addy := pre[:]
 	return addy
 }
 
-// For saving struct to JSON
-//func main() {
-//	mfcx := "MFCx"
-//      file, _ := ioutil.ReadFile("MFCKeys.json")
-//      keys := MFCKeys{}
-//      _ = json.Unmarshal([]byte(file), &keys)
-//	addy := MakeAddress(keys)
-//	addyString := hex.EncodeToString(addy)
-//	mfcxAddy := mfcx + addyString
-//	newMFCAddress := MFCAddress{}
-//	newMFCAddress.MFCxAddy = mfcxAddy
-//	newMFCAddress.Address = addy
-//	newMFCAddress.PublicKey = keys.PublicKey
-//	fmt.Println(newMFCAddress.MFCxAddy)
-//        fmt.Println(newMFCAddress.Address)
-//       fmt.Println(newMFCAddress.PublicKey)
-//}
+// SaveAddress()
+// Opens MFCKeys.JSON and makes MFCAddress{}
+func SaveAddress() {
+	mfcx := "MFCx"
+	keys := LoadKeys()
+	addy := MakeAddress(keys)
+	addyString := hex.EncodeToString(addy)
+	mfcxaddy := mfcx + addyString
+	newaddy := MFCAddress{}
+	newaddy.MFCxAddy = mfcxaddy
+	newaddy.PublicKey = keys.PublicKey
+	fmt.Printf("MFCx Address: %s\n", newaddy.MFCxAddy)
+	fmt.Printf("Public Key: %x\n", newaddy.PublicKey)
+        file, _ := json.MarshalIndent(newaddy, "", " ")
+        _ = ioutil.WriteFile("MFCAddress.json", file, 0644)
+	fmt.Println("file saved")
+}

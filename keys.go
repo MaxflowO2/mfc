@@ -17,9 +17,6 @@ package main
 
 import (
 	"crypto/ed25519"
-//	"encoding/hex"
-//	"golang.org/x/crypto/sha3"
-//	"fmt"
 	"encoding/json"
 	"io/ioutil"
 )
@@ -37,13 +34,12 @@ func KeyGen() MFCKeys {
 	// pass nil to get keys
 	pub, priv, _ := ed25519.GenerateKey(nil)
 
-	// keys added to MFCKeys{}
+	// keys added to MFCKeys{} struct
 	keys := MFCKeys{
 		PublicKey: pub,
 		PrivateKey: priv,
 	}
 
-	// Add RETURN of keys as MFCKeys{}
 	return keys
 }
 
@@ -62,3 +58,27 @@ func LoadKeys() MFCKeys {
 	_ = json.Unmarshal([]byte(file), &keys)
 	return keys
 }
+
+// Sign(message []byte)
+// Opens MFCKeys.JSON automatically, and signs data
+// Returns []byte signature
+func Sign(message []byte) []byte {
+	keys := LoadKeys()
+	sig:= ed25519.Sign(keys.PrivateKey, message)
+	return sig
+}
+
+// SelfVerify(message []byte, sig []byte)
+// Opens MFCKeys.JSON automatticaly, and verifies signature
+// Returns bool
+func SelfVerify(message []byte, sig []byte) bool {
+	keys := LoadKeys()
+	verify := ed25519.Verify(keys.PublicKey, message, sig)
+	return verify
+}
+
+// OtherVerify(publicKey ed25519.PublicKey, message []byte, sig []byte)
+// Retrieves MFCKeys from DB
+// Returns bool
+
+// To be added on v0.0.9

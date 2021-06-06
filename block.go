@@ -23,7 +23,8 @@ import (
 	"fmt"
 )
 
-// Block keeps block headers
+// Block{} struct
+// Used throughout code
 type Block struct {
 	Timestamp     int64
 	Transactions  *Transaction
@@ -32,7 +33,9 @@ type Block struct {
 	Nonce         int
 }
 
-// Serialize serializes the block
+// b.Serialize()
+// Serialized block for Bolt.DB
+// Returns []byte
 func (b *Block) Serialize() []byte {
 	var result bytes.Buffer
 	encoder := gob.NewEncoder(&result)
@@ -45,7 +48,10 @@ func (b *Block) Serialize() []byte {
 	return result.Bytes()
 }
 
-// NewBlock creates and returns Block
+// NewBlock(trans *Transaction, prevBlockHash []Byte)
+// Adds Timestamp, *Transaction, BlockHash, Hash, Nonce to *Block{}
+// Preforms PoW
+// Returns *Block{}
 func NewBlock(trans *Transaction, prevBlockHash []byte) *Block {
 	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0}
 	pow := NewProofOfWork(block)
@@ -57,7 +63,11 @@ func NewBlock(trans *Transaction, prevBlockHash []byte) *Block {
 	return block
 }
 
-// NewGenesisBlock creates and returns genesis Block
+// NewGenesisBlock()
+// Obviously the start
+// **Future Update** Genesis struct{} and pass gen Genesis{} to this
+// Why? For --alphanet --betanet --mainnet (ect ect) from .JSON file
+// Returns *Block{}
 func NewGenesisBlock() *Block {
 	genesis := &Transaction{}
 	genesis.Timestamp = time.Now().Unix()
@@ -73,7 +83,9 @@ func NewGenesisBlock() *Block {
 	return NewBlock(genesis, []byte{})
 }
 
-// DeserializeBlock deserializes a block
+// DeserializeBlock(d []byte)
+// Deserialize a block
+// Returns *Block
 func DeserializeBlock(d []byte) *Block {
 	var block Block
 

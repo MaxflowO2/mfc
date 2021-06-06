@@ -24,19 +24,24 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
+// Variable set throughout pow.go
 var (
 	maxNonce = math.MaxInt64
 )
 
+// Constant for pow difficulty
 const targetBits = 16
 
-// ProofOfWork represents a proof-of-work
+// ProofOfWork {} struct
+// Used for pow functions below
 type ProofOfWork struct {
 	block  *Block
 	target *big.Int
 }
 
-// NewProofOfWork builds and returns a ProofOfWork
+// NewProofOfWork(b *Block)
+// Uses targetBits to set difficulty
+// Returns *ProofOfWork{}
 func NewProofOfWork(b *Block) *ProofOfWork {
 	target := big.NewInt(1)
 	target.Lsh(target, uint(256-targetBits))
@@ -46,6 +51,9 @@ func NewProofOfWork(b *Block) *ProofOfWork {
 	return pow
 }
 
+// pow.prepareData(nonce int)
+// Joins block data into []byte
+// Returns []byte
 func (pow *ProofOfWork) prepareData(nonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
@@ -61,7 +69,9 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 	return data
 }
 
-// Run performs a proof-of-work
+// pow.Run()
+// Preforms Sha3.Sum256 hash of block data
+// Returns Nonce, Hash
 func (pow *ProofOfWork) Run() (int, []byte) {
 	var hashInt big.Int
 	var hash [32]byte
@@ -86,7 +96,9 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 	return nonce, hash[:]
 }
 
-// Validate validates block's PoW
+// pow.Validate()
+// Validates Hash
+// Returns bool
 func (pow *ProofOfWork) Validate() bool {
 	var hashInt big.Int
 

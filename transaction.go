@@ -22,12 +22,15 @@ import(
         "math"
         "math/big"
 	"crypto/ed25519"
-
         "golang.org/x/crypto/sha3"
 )
 
+// Transaction{} struct
+// Basic state change of blockchain/db
+// Used throughout as *Transaction
 type Transaction struct {
         Timestamp       int64
+	// update Sender/Reciever to string v0.0.8
 	Sender		[]byte
 	Receiver	[]byte
 	Amount		uint64
@@ -35,18 +38,22 @@ type Transaction struct {
 	Hash		[]byte
 	Nonce		int
 }
-// for PoW FCN
+
+// powTransaction {} struct
+// Used for powT functions below
 type powTransaction struct{
 	transaction *Transaction
 	target *big.Int
 }
 
-// for PoW FCN
+// Set Variables for powT functions below
 var maxTransNonce = math.MaxInt64
 var targetTrans = 8
 
-// for PoW FCN
-func NewPOWTrans (t *Transaction) *powTransaction {
+// NewPOWTrans(transaction *Transaction)
+// sets Transaction.target of powTransaction{} from targetTrans
+// Returns *powTransaction{}
+func NewPOWTrans(t *Transaction) *powTransaction {
 	target := big.NewInt(1)
 	target.Lsh(target, uint(256-targetTrans))
 
@@ -55,11 +62,14 @@ func NewPOWTrans (t *Transaction) *powTransaction {
 	return powT
 }
 
-// for PoW FCN
+// powT.prepareTransData(tnonce)
+// Joins all elements of *Transaction into bytes for hash
+// Returns []byte
 func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
 			IntToHex(int64(powT.transaction.Timestamp)),
+			// update Sender/Reciever to string v0.0.8
 			powT.transaction.Sender,
 			powT.transaction.Receiver,
 			IntToHex(int64(powT.transaction.Amount)),
@@ -73,7 +83,9 @@ func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 	return data
 }
 
-// for PoW FCN
+// powT.RunTrans()
+// sha3.Sum256 Hash of Transaction data
+// Returns Nonce, Hash
 func (powT *powTransaction) RunTrans() (int, []byte) {
         var hashInt big.Int
         var hash [32]byte
@@ -83,7 +95,7 @@ func (powT *powTransaction) RunTrans() (int, []byte) {
         for tnonce < maxTransNonce {
                 data := powT.prepareTransData(tnonce)
 
-                hash =sha3.Sum256(data)
+                hash = sha3.Sum256(data)
                 fmt.Printf("\r%x", hash)
                 hashInt.SetBytes(hash[:])
 
@@ -98,7 +110,9 @@ func (powT *powTransaction) RunTrans() (int, []byte) {
         return tnonce, hash[:]
 }
 
-// for PoW FCN
+// powT.ValidateTrans()
+// part of powT *Transaction
+// Returns bool
 func (powT *powTransaction) ValidateTrans() bool {
         var hashInt big.Int
 
@@ -113,6 +127,7 @@ func (powT *powTransaction) ValidateTrans() bool {
 
 // null Transaction for "filling blocks"
 // testing only
+// will need updates on v0.0.8 (string for sender/receiver)
 func nullTransaction() *Transaction {
 	a := KeyGen()
 	b := KeyGen()
@@ -155,11 +170,3 @@ func nullTransaction() *Transaction {
 
 	return nullTransaction
 }
-
-// FCN to add Transaction to block
-//func nullTransAdd() {
-//	dataraw := nullTransaction()
-//	dataslice := dataraw[:]
-//	datastring := string(dataslice)
-//	AddBlock(datastring)
-//}
