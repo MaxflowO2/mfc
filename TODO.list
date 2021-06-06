@@ -7,6 +7,9 @@ Add to Struct:
 	Height - What number is it?
 	Difficulty - What value is it?
 	BlockRewards
+Add JSON for Transmitting
+Add JSON for Alphanet Genesis block
+CLI for Alphanet
 
 POW Function:
 Add POW to Block // 0.0.2
@@ -17,6 +20,7 @@ Transaction Functions:
 Create Transaction // 0.0.4
 Add Transaction to Block // 0.0.7
 Add Transaction to Database // (Currently on)
+Add JSON for Transmitting
 
 Crypto Functions:
 Keygenesis ed25519 // 0.0.5
@@ -27,10 +31,13 @@ Loading Keys from file // 0.0.6
 
 Addressing Functions:
 Addresses // 0.0.5
-Keys -> Address // 0.0.5 (update soon MFCx, prefix done)
+Keys -> Address // 0.0.5
+MFCx Address // 0.0.7
 Add Address to Transaction // 0.0.6
 Add Address to Block
-Create Struct for DB
+Create Struct for DB // 0.0.7
+Transmit Struct for Sig Verify
+Adjust Address to MFCx[12:] len = 24
 
 Consensus Function:
 Develop GHOST
@@ -55,7 +62,20 @@ Network Functions:
 P2P
 Mempool/txpool upgrade
 
-Other:
-ATP costs
-Parallel Hashing over GHOST
-PoS token (ATP Generation)
+Make Packages:
+Keys
+Address
+Smart Contract/Hyperledger
+Transaction
+"Mempool" (need new name)
+Block
+Blockchain
+Network
+Consensus
+
+CLI updates:
+Make Keys/Address (will be automatic via main.go)
+What network to run
+Mainnet (when launched)
+Alphanet (current)
+Betanet (next test network)
