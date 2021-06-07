@@ -18,41 +18,99 @@ package main
 import (
 	"fmt"
 	"log"
-
+//	"time"
 	"github.com/boltdb/bolt"
 )
 
 const dbFile = "blockchain.db"
 const blocksBucket = "blocks"
 
-// Blockchain keeps a sequence of Blocks
+// Blockchain{} struct
 type Blockchain struct {
 	tip []byte
 	db  *bolt.DB
 }
 
-// BlockchainIterator is used to iterate over blockchain blocks
+// BlockchainIterator{} struct
 type BlockchainIterator struct {
 	currentHash []byte
 	db          *bolt.DB
 }
 
-// AddBlock saves provided data as a block in the blockchain
-func (bc *Blockchain) AddBlock(transaction *Transaction) {
+// SetTargetBits()
+// Update for v0.0.8
+//func (bc *Blockchain) SetTargetBits() int {
+	// Sets time in seconds per Block
+//	var targetTime = 60
+	// This number will be modified over time, initally targetBits
+//      var newTargetBits = 16
+        // Sets length of blocks for PoW Difficulty Adjustment
+//    var targetBlocks = 64
+        // -1 since we are immediately getting lastBlock of Blockchain
+//targetBlocks--
+////        bci := bc.Iterator()
+//        lastBlock := bci.Next() // sets lastBlock
+//        lastDiff := lastBlock.Difficulty // Returns Last Difficulty
+//        timeMeow := time.Now().Unix() // Yes a Super Troopers Reference
+        // finds the last timestamp of the targetBlock
+        // say targetBlock was 10, we only need 9 (see above)
+        // if you hit Genesis, code ends
+//        var i int
+  //      var timeThen int64
+    //    for i = 0; i < targetBlocks; i++ {
+      //          block := bci.Next()
+        //        timeThen = block.Timestamp
+          //      if len(block.PrevBlockHash) == 0 {
+            //            break
+              //  }
+//        }
+  //      // a is either equal to or less than orginal targetBlocks
+    //    targetBlocks++ // now at orginal value
+      //  i++ // sets count to proper number of blocks
+        //if i < targetBlocks {
+		// set as old const targetBits
+//                newTargetBits = 16
+  //      } else {
+    //            // sets time difference
+      //          tTime := timeMeow - timeThen
+	//	totalTime := int(tTime)
+          //      // calculates seconds per block
+            //    spb := totalTime/targetBlocks
+              //  if spb < targetTime {
+                //        newTargetBits = lastDiff + 1
+//                }
+  //              if spb > targetTime {
+    //                    newTargetBits = lastDiff - 1
+      //          }
+        //}
+//	return newTargetBits
+//}
+
+// bc.AddBlock(trans *Transaction)
+// Opens blockchain.db, pulls lashHash
+// Calls NewBlock(trans, lastHash)
+// Calls Serialize() and adds to blocksBucket
+func (bc *Blockchain) AddBlock(trans *Transaction) {
 	var lastHash []byte
+	// For Height
+	var lastBlock *Block
 
 	err := bc.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
 		lastHash = b.Get([]byte("l"))
-
+		// For Height
+		lastBlock = DeserializeBlock(b.Get(lastHash))
 		return nil
 	})
 
 	if err != nil {
 		log.Panic(err)
 	}
-
-	newBlock := NewBlock(transaction, lastHash)
+	// For Height
+	lastHeight := lastBlock.Height
+	// For newTargetBits
+//	newTarget := bc.SetTargetBits()
+	newBlock := NewBlock(trans, lastHash, lastHeight)
 
 	err = bc.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
@@ -72,7 +130,9 @@ func (bc *Blockchain) AddBlock(transaction *Transaction) {
 	})
 }
 
-// Iterator ...
+// Iterator()
+// Returns BlockchainIterator{} struct
+// lastHash or newBlockHash is bc.tip
 func (bc *Blockchain) Iterator() *BlockchainIterator {
 	bci := &BlockchainIterator{bc.tip, bc.db}
 

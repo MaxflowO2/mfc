@@ -31,6 +31,10 @@ type Block struct {
 	PrevBlockHash []byte
 	Hash          []byte
 	Nonce         int
+	Height	      int
+//	Difficulty    int
+	HashBy      string
+	Signed	      []byte
 }
 
 // b.Serialize()
@@ -52,13 +56,17 @@ func (b *Block) Serialize() []byte {
 // Adds Timestamp, *Transaction, BlockHash, Hash, Nonce to *Block{}
 // Preforms PoW
 // Returns *Block{}
-func NewBlock(trans *Transaction, prevBlockHash []byte) *Block {
-	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0}
+func NewBlock(trans *Transaction, prevBlockHash []byte, prevHeight int) *Block {
+	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, "fix", []byte{}}
 	pow := NewProofOfWork(block)
 	nonce, hash := pow.Run()
 
+	prevHeight++
+	block.Height =prevHeight
 	block.Hash = hash[:]
 	block.Nonce = nonce
+	block.HashBy = LoadAddy()
+	block.Signed = Sign(block.Hash)
 
 	return block
 }
@@ -80,7 +88,7 @@ func NewGenesisBlock() *Block {
 	genesis.Hash = hash[:]
 	genesis.Nonce = nonce
         fmt.Println("**************************************************")
-	return NewBlock(genesis, []byte{})
+	return NewBlock(genesis, []byte{}, 0)
 }
 
 // DeserializeBlock(d []byte)

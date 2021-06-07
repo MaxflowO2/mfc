@@ -79,12 +79,14 @@ func (cli *CLI) printChain() {
 
 	for {
 		block := bci.Next()
-
+		fmt.Printf("Block Height: %v\n", block.Height)
 		fmt.Printf("Prev. hash: %x\n", block.PrevBlockHash)
 		fmt.Printf("Transactions: %x\n", block.Transactions)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := NewProofOfWork(block)
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
+		fmt.Printf("Hashed By: %s\n", block.HashBy)
+		fmt.Printf("Signature: %x\n", block.Signed)
 		fmt.Println()
 
 		if len(block.PrevBlockHash) == 0 {

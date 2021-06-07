@@ -23,7 +23,7 @@ import (
 
 	"golang.org/x/crypto/sha3"
 )
-const targetBits = 16
+
 // Variable set throughout pow.go
 var (
 	maxNonce = math.MaxInt64
@@ -39,7 +39,7 @@ type ProofOfWork struct {
 // NewProofOfWork(b *Block)
 // Uses targetBits to set difficulty
 // Returns *ProofOfWork{}
-func NewProofOfWork(b *Block) *ProofOfWork {
+func NewProofOfWork(b *Block, targetBits int) *ProofOfWork {
 	target := big.NewInt(1)
 	target.Lsh(target, uint(256-targetBits))
 
@@ -57,7 +57,7 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 			pow.block.PrevBlockHash,
 			pow.block.Transactions.Hash,
 			IntToHex(pow.block.Timestamp),
-			IntToHex(int64(targetBits)),
+			pow.block.Difficulty,
 			IntToHex(int64(nonce)),
 		},
 		[]byte{},

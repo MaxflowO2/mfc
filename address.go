@@ -68,3 +68,12 @@ func SaveAddress() {
         _ = ioutil.WriteFile("MFCAddress.json", file, 0644)
 	fmt.Println("file saved")
 }
+
+// LoadKeys()
+// Opens MFCKeys.JSON and returns MFCKeys{}
+func LoadAddy() string {
+        file, _ := ioutil.ReadFile("MFCAddress.json")
+        addy := MFCAddress{}
+        _ = json.Unmarshal([]byte(file), &addy)
+        return addy.MFCxAddy
+}
