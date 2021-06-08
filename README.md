@@ -5,18 +5,18 @@ This is gaining momentum<br>
 Currently Completed, and what to expect soon:<br>
 <ul style="list-style: circle">
   <li>Crypto/Keys: Completed.</li>
-  <li>Crypto/Address: Currently revising; Bare bones completed; Struct completed; Started DB bucket for Trie</li>
-  <li>Transactions: Currently revising; Barebones completed; Upon integration of Smart Contracts ATP costs</li>
-  <li>Smart Contract Language: Developing more functions, bare bones completed</li>
-  <li>Mempool/Txpool Protocol: Research and Development of better protocols</li>
-  <li>UTXO/Trie Protocol: Research and Development of better protocols</li>
-  <li>Blocks: Currently revising; Adding Height Difficulty for enhanced PoW</li>
+  <li>Crypto/Address: Under revision, issue passing string to block, database bucket missing</li>
+  <li>Transactions: Under revision, issue with pow/string values, database missing</li>
+  <li>Smart Contract Language: Started, not finished as of yet</li>
+  <li>Mempool/Txpool Protocol: Research and Development phase</li>
+  <li>UTXO/Trie Protocol: Research and Development phase</li>
+  <li>Blocks: Under revision, issue with pow/string values</li>
   <li>PoW Function: Currently revising from static to dynamic</li>
-  <li>Block propagation: Currently reviewing 38 second rule, more development inbound</li>
-  <li>Blockchain: Currently revising, adding JSON method to Genesis block</li>
+  <li>Block propagation: Not implemented, no P2P yet</li>
+  <li>Blockchain: Completed, may need rework with pow</li>
   <li>Consensus Protocol: Research and Development of pure GHOST</li>
-  <li>Network: Under Development</li>
-  <li>PoS release? - Potentially</li>
+  <li>Network: Not implimented</li>
+  <li>PoS release? - Research and Development phase</li>
 </ul>
 
 Use the makefile, makes the program work, will snap off packages by v0.0.10 if not sooner<br>
