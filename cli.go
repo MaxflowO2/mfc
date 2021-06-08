@@ -1,3 +1,4 @@
+// (cli.go) - Contains the Command Line Interface of ./mfc
 // Copyright (C) 2021 MaxflowO2, the only author of Max Flow Chain
 //
 // This program is free software: you can redistribute it and/or modify
