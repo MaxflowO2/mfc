@@ -66,7 +66,7 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 	block.Hash = hash[:]
 	block.Nonce = nonce
 	block.Difficulty = diff
-	block.HashBy = LoadAddy()
+	block.HashBy = LoadAddress()
 	block.Signed = Sign(block.Hash)
 
 	return block

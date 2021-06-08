@@ -35,31 +35,31 @@ type MFCAddress struct {
 // LoadAddress()
 // Opens MFCKeys.JSON and returns []byte Address
 // v0.0.8 update to String
-func LoadAddress() []byte {
-	keys := LoadKeys()
-	pre := MakeAddress(keys)
-	addy := pre[:]
-	return addy
-}
+//func LoadAddress() string {
+//	keys := LoadKeys()
+//	pre := MakeAddress(keys)
+//	addy := pre[:]
+//	return addy
+//}
 
 // MakeAddress(MFCKeys)
 // Takes MFCKeys {} and returns []byte Address
 // v0.0.8 update to string
-func MakeAddress(mfc MFCKeys) []byte {
+func MakeAddress(mfc MFCKeys) string {
+	mfcx := "MFCx"
 	pre := sha3.Sum256(mfc.PublicKey)
-        addy := pre[:]
-	return addy
+        addy := pre[12:]
+        addyString := hex.EncodeToString(addy)
+        mfcxaddy := mfcx + addyString
+	return mfcxaddy
 }
 
 // SaveAddress()
 // Opens MFCKeys.JSON and makes MFCAddress{}
 func SaveAddress() {
-	mfcx := "MFCx"
+	var newaddy MFCAddress
 	keys := LoadKeys()
-	addy := MakeAddress(keys)
-	addyString := hex.EncodeToString(addy)
-	mfcxaddy := mfcx + addyString
-	newaddy := MFCAddress{}
+	mfcxaddy := MakeAddress(keys)
 	newaddy.MFCxAddy = mfcxaddy
 	newaddy.PublicKey = keys.PublicKey
 	fmt.Printf("MFCx Address: %s\n", newaddy.MFCxAddy)
@@ -71,7 +71,7 @@ func SaveAddress() {
 
 // LoadKeys()
 // Opens MFCKeys.JSON and returns MFCKeys{}
-func LoadAddy() string {
+func LoadAddress() string {
         file, _ := ioutil.ReadFile("MFCAddress.json")
         addy := MFCAddress{}
         _ = json.Unmarshal([]byte(file), &addy)

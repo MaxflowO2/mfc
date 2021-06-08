@@ -31,8 +31,8 @@ import(
 type Transaction struct {
         Timestamp       int64
 	// update Sender/Reciever to string v0.0.8
-	Sender		[]byte
-	Receiver	[]byte
+	Sender		string
+	Receiver	string
 	Amount		uint64
 	Signature	[]byte
 	Hash		[]byte
@@ -70,8 +70,8 @@ func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 		[][]byte{
 			IntToHex(int64(powT.transaction.Timestamp)),
 			// update Sender/Reciever to string v0.0.8
-			powT.transaction.Sender,
-			powT.transaction.Receiver,
+			[]byte(powT.transaction.Sender),
+			[]byte(powT.transaction.Receiver),
 			IntToHex(int64(powT.transaction.Amount)),
 			powT.transaction.Signature,
 			IntToHex(int64(targetTrans)),
@@ -144,8 +144,8 @@ func bsTransaction() *Transaction {
 	var amount uint64 = 0
 	message := bytes.Join(
                 [][]byte{
-                        sender,
-                        receiver,
+                        []byte(sender),
+                        []byte(receiver),
                         IntToHex(int64(amount)),
                 },
                 []byte{},
@@ -160,9 +160,9 @@ func bsTransaction() *Transaction {
 
         fmt.Println("**************************************************")
 	fmt.Println("START OF NULL TRANSACTION")
-        fmt.Printf("Timestamp: %x\n", bs.Timestamp)
-        fmt.Printf("Sender Address: %x\n", bs.Sender)
-        fmt.Printf("Receiver Address: %x\n", bs.Receiver)
+        fmt.Printf("Timestamp: %v\n", bs.Timestamp)
+        fmt.Printf("Sender Address: %s\n", bs.Sender)
+        fmt.Printf("Receiver Address: %s\n", bs.Receiver)
         fmt.Println("Amount: " , bs.Amount)
         fmt.Printf("Signtaure:\n%x\n", bs.Signature)
 
