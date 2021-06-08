@@ -51,6 +51,32 @@ func NewProofOfWork(b *Block) *ProofOfWork {
 	return pow
 }
 
+// This is a bullshit version of MerkelRoot.
+// sliceHash([]*Trans)
+// Gets the bytes of all hashes, in []*Transaction
+// Returns Sha3.Sum256 of []*Transaction
+func (pow *ProofOfWork) sliceHash() []byte {
+        max := len(pow.block.Transactions)
+        var temp *Transaction
+        var toHash []byte
+        for i := 0 ; i < max ; i++ {
+                temp = pow.block.Transactions[i]
+                toHash = bytes.Join(
+			[][]byte{
+				toHash,
+				temp.Hash,
+			},
+			[]byte{},
+		)
+		// add a "toblock bool" - add to struct
+		// add a "database addition" - Main database
+		// add a "database withdrawl" - Mempool
+        }
+        resultpre := (sha3.Sum256(toHash))
+	result := resultpre[:]
+        return result
+}
+
 // pow.prepareData(nonce int)
 // Joins block data into []byte
 // Returns []byte
@@ -58,7 +84,7 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
 			pow.block.PrevBlockHash,
-//			pow.block.Transactions.Hash,
+			pow.sliceHash(),
 			IntToHex(pow.block.Timestamp),
 			IntToHex(int64(targetBits)),
 			IntToHex(int64(nonce)),

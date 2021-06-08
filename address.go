@@ -20,10 +20,14 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
-
+	"bytes"
+	"encoding/gob"
+	"log"
 	"encoding/json"
 	"io/ioutil"
 )
+
+const addressBucket = "address"
 
 // MFCAddress {}
 // Struct will be used throughout code
@@ -76,3 +80,52 @@ func LoadAddy() string {
         _ = json.Unmarshal([]byte(file), &addy)
         return addy.MFCxAddy
 }
+
+func LoadMFCAddy() MFCAddress {
+        file, _ := ioutil.ReadFile("MFCAddress.json")
+        addy := MFCAddress{}
+        _ = json.Unmarshal([]byte(file), &addy)
+        return addy
+}
+
+// Database functions below
+
+// a.Serialized()
+// Serialized address for Bolt.DB
+// Returns []byte
+func (a *MFCAddress) Serialize() []byte {
+        var result bytes.Buffer
+        encoder := gob.NewEncoder(&result)
+
+        err := encoder.Encode(a)
+        if err != nil {
+                log.Panic(err)
+        }
+
+        return result.Bytes()
+}
+
+// DeserializeAddress(d []byte)
+// Deserialize an MFCAddress
+// Returns *MFCAddress
+func DeserializeAddress(d []byte) *MFCAddress {
+        var addy MFCAddress
+
+        decoder := gob.NewDecoder(bytes.NewReader(d))
+        err := decoder.Decode(&addy)
+        if err != nil {
+                log.Panic(err)
+        }
+
+        return &addy
+}
+
+// AddAddress()
+// Adds MFCAddress to Bolt.DB
+//func AddAddress() {
+//	db, err := blot.Open(dbFile, 0600, nil)
+//	if err != nil {
+//		log.Panic(err)
+//	}
+//	err = db.Update(func(tx *bolt.Tx) error {
+//		b := tx.Bucket([]byte(addressBucket))

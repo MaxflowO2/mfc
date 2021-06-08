@@ -23,7 +23,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const dbFile = "blockchain.db"
+const dbFile = "mfc.db"
 const blocksBucket = "blocks"
 
 // Blockchain{} struct

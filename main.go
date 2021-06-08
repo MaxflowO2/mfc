@@ -17,7 +17,7 @@
 package main
 
 import (
-    "fmt"
+//    "fmt"
     "os"
 )
 
@@ -35,19 +35,19 @@ func main() {
 	keysExist := fileExists(mfckeys)
 
 	if keysExist {
-		fmt.Println("MFCKeys.json found...")
-		keys := LoadKeys()
-		fmt.Printf("MFC Public Keys is:\n%x\n", keys.PublicKey)
-		fmt.Printf("MFC Private Key is:\n%x\n", keys.PrivateKey)
-		fmt.Printf("DO NOT HAND OUT YOUR PRIVATE KEY!\n\n")
+//		fmt.Println("MFCKeys.json found...")
+//		keys := LoadKeys()
+//		fmt.Printf("MFC Public Keys is:\n%x\n", keys.PublicKey)
+//		fmt.Printf("MFC Private Key is:\n%x\n", keys.PrivateKey)
+//		fmt.Printf("DO NOT HAND OUT YOUR PRIVATE KEY!\n\n")
 	} else {
 
-		fmt.Println("MFCKeys.json was not found, generating Key Set...")
+//		fmt.Println("MFCKeys.json was not found, generating Key Set...")
 		newKeys := KeyGen()
-                fmt.Printf("MFC Public Keys is:\n%x\n", newKeys.PublicKey)
-                fmt.Printf("MFC Private Key is:\n%x\n", newKeys.PrivateKey)
-                fmt.Println("DO NOT HAND OUT YOUR PRIVATE KEY!")
-		fmt.Printf("Saving keys to MFCKeys.json!\n\n")
+//		fmt.Printf("MFC Public Keys is:\n%x\n", newKeys.PublicKey)
+//		fmt.Printf("MFC Private Key is:\n%x\n", newKeys.PrivateKey)
+//		fmt.Println("DO NOT HAND OUT YOUR PRIVATE KEY!")
+//		fmt.Printf("Saving keys to MFCKeys.json!\n\n")
 		KeySave(newKeys)
 	}
 
@@ -56,14 +56,14 @@ func main() {
 	addyExist := fileExists(mfcaddy)
 
 	if addyExist {
-		fmt.Println("MFCAddress.json found...")
-		addy := LoadAddy()
-		fmt.Printf("MFC Address is:\n%s\n\n", addy)
+//		fmt.Println("MFCAddress.json found...")
+//		addy := LoadAddy()
+//		fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	} else {
-		fmt.Println("MFCAddress.json was not found, generating Address.")
+//		fmt.Println("MFCAddress.json was not found, generating Address.")
 		SaveAddress()
-		addy := LoadAddy()
-                fmt.Printf("MFC Address is:\n%s\n\n", addy)
+//		addy := LoadAddy()
+//		fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	}
 
 	bc := NewBlockchain()

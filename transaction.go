@@ -26,6 +26,15 @@ import(
         "golang.org/x/crypto/sha3"
 )
 
+// Our Merkel Root struct for now
+//type merkelRoot struct {
+//	transHash []byte
+//	mRoot []byte
+//}
+
+// The global variable for solo only
+//var MFCRoot merkelRoot
+
 // Transaction{} struct
 // Basic state change of blockchain/db
 // Used throughout as *Transaction
@@ -159,8 +168,7 @@ func bsTransaction() *Transaction {
 	}
 	bs := &Transaction{time.Now().Unix(), sender, receiver, amount, signature, []byte{}, 0}
 
-        fmt.Println("**************************************************")
-	fmt.Println("START OF NULL TRANSACTION")
+	fmt.Println("START OF TRANSACTION")
         fmt.Printf("Timestamp: %x\n", bs.Timestamp)
         fmt.Printf("Sender Address: %x\n", bs.Sender)
         fmt.Printf("Receiver Address: %x\n", bs.Receiver)
@@ -174,8 +182,8 @@ func bsTransaction() *Transaction {
 	bs.Nonce = nonce
 
 	fmt.Println("Nonce: ", bs.Nonce)
-	fmt.Println("END OF NULL TRANSACTION")
-        fmt.Println("**************************************************")
+	fmt.Println("END OF TRANSACTION")
 
 	return bs
 }
+
