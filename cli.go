@@ -36,8 +36,6 @@ func (cli *CLI) printUsage() {
 //	fmt.Println("  autogen - creates a block every 15 seconds with nulltrans")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
-	fmt.Println("  newkeys - creates and stores new set of keys to file")
-	fmt.Println("  loadkeys - loads keys from file")
 }
 
 func (cli *CLI) validateArgs() {
@@ -45,21 +43,6 @@ func (cli *CLI) validateArgs() {
 		cli.printUsage()
 		os.Exit(1)
 	}
-}
-
-func (cli *CLI) newKeys() {
-	keys := KeyGen()
-	fmt.Println("Keys Generated")
-        fmt.Printf("Public Key: %x\n", keys.PublicKey)
-        fmt.Printf("Private Key: %x\n", keys.PrivateKey)
-	KeySave(keys)
-	fmt.Println("Keys saved to MFCKeys.JSON")
-}
-
-func (cli *CLI) loadKeys() {
-	keys := LoadKeys()
-	fmt.Printf("Public Key: %x\n", keys.PublicKey)
-	fmt.Printf("Private Key: %x\n", keys.PrivateKey)
 }
 
 func (cli *CLI) addBlock() {
@@ -109,8 +92,6 @@ func (cli *CLI) Run() {
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 //	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
 	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
-        loadKeys := flag.NewFlagSet("loadkeys", flag.ExitOnError)
-        newKeys := flag.NewFlagSet("newkeys", flag.ExitOnError)
 //	addBlockData := addBlockCmd.String("data", "", "Block data")
 
 	switch os.Args[1] {
@@ -124,16 +105,7 @@ func (cli *CLI) Run() {
 //		if err != nil {
 //			log.Panic(err)
 //		}
-        case "loadkeys":
-                err := loadKeys.Parse(os.Args[2:])
-                if err != nil {
-                        log.Panic(err)
-                }
-        case "newkeys":
-                err := newKeys.Parse(os.Args[2:])
-                if err != nil {
-                        log.Panic(err)
-                }
+
         case "bstrans":
                 err := bsTrans.Parse(os.Args[2:])
                 if err != nil {
@@ -165,12 +137,6 @@ func (cli *CLI) Run() {
 	if printChainCmd.Parsed() {
 		cli.printChain()
 	}
-        if newKeys.Parsed() {
-                cli.newKeys()
-        }
 
-        if loadKeys.Parsed() {
-                cli.loadKeys()
-        }
 }
 

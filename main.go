@@ -16,11 +16,59 @@
 
 package main
 
+import (
+    "fmt"
+    "os"
+)
+
+// fileExists(path string)
+// File check function
+// Returns err
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
 func main() {
+	// checks for MFCKeys and makes it if not there
+	var mfckeys string = "MFCKeys.json"
+	keysExist := fileExists(mfckeys)
+
+	if keysExist {
+		fmt.Println("MFCKeys.json found...")
+		keys := LoadKeys()
+		fmt.Printf("MFC Public Keys is:\n%x\n", keys.PublicKey)
+		fmt.Printf("MFC Private Key is:\n%x\n", keys.PrivateKey)
+		fmt.Println("DO NOT HAND OUT YOUR PRIVATE KEY!")
+	} else {
+
+		fmt.Println("MFCKeys.json was not found, generating Key Set...")
+		newKeys := KeyGen()
+                fmt.Printf("MFC Public Keys is:\n%x\n", newKeys.PublicKey)
+                fmt.Printf("MFC Private Key is:\n%x\n", newKeys.PrivateKey)
+                fmt.Println("DO NOT HAND OUT YOUR PRIVATE KEY!")
+		fmt.Println("Saving keys to MFCKeys.json!")
+		KeySave(newKeys)
+	}
+
+	// checks for MFCAddress and makes it if not there
+	var mfcaddy string = "MFCAddress.json"
+	addyExist := fileExists(mfcaddy)
+
+	if addyExist {
+		fmt.Println("MFCAddress.json found...")
+		addy := LoadAddy()
+		fmt.Printf("MFC Address is:\n%s\n", addy)
+	} else {
+		fmt.Println("MFCAddress.json was not found, generating Address.")
+		SaveAddress()
+		addy := LoadAddy()
+                fmt.Printf("MFC Address is:\n%s\n", addy)
+	}
+
 	bc := NewBlockchain()
 	defer bc.db.Close()
 
 	cli := CLI{bc}
 	cli.Run()
 }
-

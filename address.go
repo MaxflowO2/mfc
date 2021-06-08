@@ -20,7 +20,7 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
-	"fmt"
+
 	"encoding/json"
 	"io/ioutil"
 )
@@ -63,11 +63,8 @@ func SaveAddress() {
 	newaddy := MFCAddress{}
 	newaddy.MFCxAddy = mfcxaddy
 	newaddy.PublicKey = keys.PublicKey
-	fmt.Printf("MFCx Address: %s\n", newaddy.MFCxAddy)
-	fmt.Printf("Public Key: %x\n", newaddy.PublicKey)
         file, _ := json.MarshalIndent(newaddy, "", " ")
         _ = ioutil.WriteFile("MFCAddress.json", file, 0644)
-	fmt.Println("file saved")
 }
 
 // LoadKeys()
