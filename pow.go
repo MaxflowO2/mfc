@@ -57,12 +57,10 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
 			pow.block.PrevBlockHash,
-			// Need to add a merkel tree or something...
 //			pow.block.Transactions.Hash,
 			IntToHex(pow.block.Timestamp),
 			IntToHex(int64(targetBits)),
 			IntToHex(int64(nonce)),
-			[]byte(pow.block.HashBy),
 		},
 		[]byte{},
 	)

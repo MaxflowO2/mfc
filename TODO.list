@@ -4,10 +4,9 @@ Block Functions:
 Create a Block // 0.0.1
 Block -> Block Chain // 0.0.1
 Add to Struct:
-	Height - What number is it? // Done
-	Difficulty - What value is it? // Done
-	BlockRewards // Pending
-Slice of Transaction (multiple) // Done
+	Height - What number is it?
+	Difficulty - What value is it?
+	BlockRewards
 Add JSON for Transmitting
 Add JSON for Alphanet Genesis block
 CLI for Alphanet
@@ -15,18 +14,18 @@ CLI for Alphanet
 POW Function:
 Add POW to Block // 0.0.2
 Add POW to Transaction // 0.0.5
-POW Modification over time // Pending
+POW Modification over time
 
 Transaction Functions:
 Create Transaction // 0.0.4
 Add Transaction to Block // 0.0.7
-Add Transaction to Database // Pending
+Add Transaction to Database // (Currently on)
 Add JSON for Transmitting
 
 Crypto Functions:
 Keygenesis ed25519 // 0.0.5
 Signatures ed25519 // 0.0.5
-Verify Sig ed25519 globally // Pending
+Verify Sig ed25519 globally
 Saving Keys to file // 0.0.6
 Loading Keys from file // 0.0.6
 
@@ -35,11 +34,10 @@ Addresses // 0.0.5
 Keys -> Address // 0.0.5
 MFCx Address // 0.0.7
 Add Address to Transaction // 0.0.6
-Add Address to Block // Done
+Add Address to Block
 Create Struct for DB // 0.0.7
 Transmit Struct for Sig Verify
-Adjust Address to MFCx[12:] len = 24 // Done
-Adding error checink to Address
+Adjust Address to MFCx[12:] len = 24
 
 Consensus Function:
 Develop GHOST
@@ -76,8 +74,7 @@ Network
 Consensus
 
 CLI updates:
-Make Keys/Address // Done
-Load Keys/Address // Done
+Make Keys/Address (will be automatic via main.go)
 What network to run
 Mainnet (when launched)
 Alphanet (current)

@@ -21,7 +21,7 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"time"
+//	"time"
 )
 
 // CLI responsible for processing command line arguments
@@ -32,11 +32,11 @@ type CLI struct {
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  addblock - with multiple 'bs-transactions'")
-	fmt.Println("  autogen - creates a block every 15 seconds")
+//	fmt.Println("  autogen - creates a block every 15 seconds with nulltrans")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
-	fmt.Println("  newuser - creates and saves MFCKeys and Address to file")
-	fmt.Println("  loaduser - loads MFCKeys and MFCxAddress from file")
+	fmt.Println("  newkeys - creates and stores new set of keys to file")
+	fmt.Println("  loadkeys - loads keys from file")
 }
 
 func (cli *CLI) validateArgs() {
@@ -46,22 +46,19 @@ func (cli *CLI) validateArgs() {
 	}
 }
 
-func (cli *CLI) newUser() {
+func (cli *CLI) newKeys() {
 	keys := KeyGen()
 	fmt.Println("Keys Generated")
         fmt.Printf("Public Key: %x\n", keys.PublicKey)
         fmt.Printf("Private Key: %x\n", keys.PrivateKey)
 	KeySave(keys)
 	fmt.Println("Keys saved to MFCKeys.JSON")
-	SaveAddress()
 }
 
-func (cli *CLI) loadUser() {
+func (cli *CLI) loadKeys() {
 	keys := LoadKeys()
 	fmt.Printf("Public Key: %x\n", keys.PublicKey)
 	fmt.Printf("Private Key: %x\n", keys.PrivateKey)
-	mfcxaddy := LoadAddress()
-	fmt.Printf("Max Flow Chain Address:\n%s\n", mfcxaddy)
 }
 
 func (cli *CLI) addBlock() {
@@ -73,9 +70,9 @@ func (cli *CLI) addBlock() {
         fmt.Println("Success!")
 }
 
-func (cli *CLI) autoGen(t time.Time) {
-	cli.addBlock()
-}
+//func (cli *CLI) autoGen(t time.Time) {
+//	cli.bc.AddBlock(bsTransaction())
+//}
 
 func (cli *CLI) bsTrans() {
 	bsTransaction()
@@ -109,10 +106,10 @@ func (cli *CLI) Run() {
 
 	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
+//	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
 	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
-        loadUser := flag.NewFlagSet("loaduser", flag.ExitOnError)
-        newUser := flag.NewFlagSet("newuser", flag.ExitOnError)
+        loadKeys := flag.NewFlagSet("loadkeys", flag.ExitOnError)
+        newKeys := flag.NewFlagSet("newkeys", flag.ExitOnError)
 //	addBlockData := addBlockCmd.String("data", "", "Block data")
 
 	switch os.Args[1] {
@@ -121,18 +118,18 @@ func (cli *CLI) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
-	case "autogen":
-		err := autoGen.Parse(os.Args[2:])
-		if err != nil {
-			log.Panic(err)
-		}
-        case "loaduser":
-                err := loadUser.Parse(os.Args[2:])
+//	case "autogen":
+//		err := autoGen.Parse(os.Args[2:])
+//		if err != nil {
+//			log.Panic(err)
+//		}
+        case "loadkeys":
+                err := loadKeys.Parse(os.Args[2:])
                 if err != nil {
                         log.Panic(err)
                 }
-        case "newuser":
-                err := newUser.Parse(os.Args[2:])
+        case "newkeys":
+                err := newKeys.Parse(os.Args[2:])
                 if err != nil {
                         log.Panic(err)
                 }
@@ -156,9 +153,9 @@ func (cli *CLI) Run() {
 		cli.addBlock()
 	}
 
-	if autoGen.Parsed() {
-	        Repeat(5*time.Second, cli.autoGen)
-	}
+//	if autoGen.Parsed() {
+//	        Repeat(15*time.Second, cli.autoGen)
+//	}
 
         if bsTrans.Parsed() {
         	cli.bsTrans()
@@ -167,12 +164,12 @@ func (cli *CLI) Run() {
 	if printChainCmd.Parsed() {
 		cli.printChain()
 	}
-        if newUser.Parsed() {
-                cli.newUser()
+        if newKeys.Parsed() {
+                cli.newKeys()
         }
 
-        if loadUser.Parsed() {
-                cli.loadUser()
+        if loadKeys.Parsed() {
+                cli.loadKeys()
         }
 }
 
