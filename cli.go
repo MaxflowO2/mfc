@@ -68,7 +68,7 @@ func (cli *CLI) printChain() {
 	for {
 		block := bci.Next()
 		fmt.Printf("Block Height: %v\n", block.Height)
-		fmt.Printf("Previous Hash: %x\n", block.PrevBlockHash)
+		fmt.Printf("Previous Hash:\n%x\n", block.PrevBlockHash)
 		fmt.Printf("Transactions in Block:\n%v\n", block.Transactions)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := NewProofOfWork(block)

@@ -57,7 +57,8 @@ func MakeAddress(mfc MFCKeys) []byte {
 func SaveAddress() {
 	mfcx := "MFCx"
 	keys := LoadKeys()
-	addy := MakeAddress(keys)
+	addypre := MakeAddress(keys)
+	addy := addypre[12:]
 	addyString := hex.EncodeToString(addy)
 	mfcxaddy := mfcx + addyString
 	newaddy := MFCAddress{}

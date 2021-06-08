@@ -39,7 +39,7 @@ func main() {
 		keys := LoadKeys()
 		fmt.Printf("MFC Public Keys is:\n%x\n", keys.PublicKey)
 		fmt.Printf("MFC Private Key is:\n%x\n", keys.PrivateKey)
-		fmt.Println("DO NOT HAND OUT YOUR PRIVATE KEY!")
+		fmt.Printf("DO NOT HAND OUT YOUR PRIVATE KEY!\n\n")
 	} else {
 
 		fmt.Println("MFCKeys.json was not found, generating Key Set...")
@@ -47,7 +47,7 @@ func main() {
                 fmt.Printf("MFC Public Keys is:\n%x\n", newKeys.PublicKey)
                 fmt.Printf("MFC Private Key is:\n%x\n", newKeys.PrivateKey)
                 fmt.Println("DO NOT HAND OUT YOUR PRIVATE KEY!")
-		fmt.Println("Saving keys to MFCKeys.json!")
+		fmt.Printf("Saving keys to MFCKeys.json!\n\n")
 		KeySave(newKeys)
 	}
 
@@ -58,12 +58,12 @@ func main() {
 	if addyExist {
 		fmt.Println("MFCAddress.json found...")
 		addy := LoadAddy()
-		fmt.Printf("MFC Address is:\n%s\n", addy)
+		fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	} else {
 		fmt.Println("MFCAddress.json was not found, generating Address.")
 		SaveAddress()
 		addy := LoadAddy()
-                fmt.Printf("MFC Address is:\n%s\n", addy)
+                fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	}
 
 	bc := NewBlockchain()
