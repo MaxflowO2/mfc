@@ -15,7 +15,7 @@ POW Function: pow.go
 Add POW to Block // 0.0.2
 Add POW to Transaction // 0.0.5
 Add String address to pow.go // Rollback, to 88cb6aa, pow = false with string over []byte
-Add "Merkel tree" of Transaction hashes // Pending
+Add "Merkel tree" of Transaction hashes // Primative done
 POW Modification over time // Pending
 
 Transaction Functions: transaction.go
