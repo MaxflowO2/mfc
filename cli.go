@@ -21,7 +21,7 @@ import (
 	"log"
 	"os"
 	"strconv"
-//	"time"
+	"time"
 )
 
 // CLI responsible for processing command line arguments
@@ -32,11 +32,11 @@ type CLI struct {
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  addblock - with multiple 'bs-transactions'")
-//	fmt.Println("  autogen - creates a block every 15 seconds with nulltrans")
+	fmt.Println("  autogen - creates a block every 15 seconds")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
-	fmt.Println("  newuser - creates and stores new set of keys to file")
-	fmt.Println("  loaduser - loads keys from file")
+	fmt.Println("  newuser - creates and saves MFCKeys and Address to file")
+	fmt.Println("  loaduser - loads MFCKeys and MFCxAddress from file")
 }
 
 func (cli *CLI) validateArgs() {
@@ -73,9 +73,9 @@ func (cli *CLI) addBlock() {
         fmt.Println("Success!")
 }
 
-//func (cli *CLI) autoGen(t time.Time) {
-//	cli.bc.AddBlock(bsTransaction())
-//}
+func (cli *CLI) autoGen(t time.Time) {
+	cli.addBlock()
+}
 
 func (cli *CLI) bsTrans() {
 	bsTransaction()
@@ -109,7 +109,7 @@ func (cli *CLI) Run() {
 
 	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-//	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
+	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
 	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
         loadUser := flag.NewFlagSet("loaduser", flag.ExitOnError)
         newUser := flag.NewFlagSet("newuser", flag.ExitOnError)
@@ -121,11 +121,11 @@ func (cli *CLI) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
-//	case "autogen":
-//		err := autoGen.Parse(os.Args[2:])
-//		if err != nil {
-//			log.Panic(err)
-//		}
+	case "autogen":
+		err := autoGen.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
         case "loaduser":
                 err := loadUser.Parse(os.Args[2:])
                 if err != nil {
@@ -156,9 +156,9 @@ func (cli *CLI) Run() {
 		cli.addBlock()
 	}
 
-//	if autoGen.Parsed() {
-//	        Repeat(15*time.Second, cli.autoGen)
-//	}
+	if autoGen.Parsed() {
+	        Repeat(5*time.Second, cli.autoGen)
+	}
 
         if bsTrans.Parsed() {
         	cli.bsTrans()
