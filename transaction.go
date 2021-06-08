@@ -125,10 +125,18 @@ func (powT *powTransaction) ValidateTrans() bool {
         return isValid
 }
 
+// SliceTransaction(t *Transaction)
+// Add to slice of []*Transaction
+// Returs []*Transaction
+func SliceTransaction(t *Transaction, st []*Transaction) []*Transaction {
+	st = append(st, t)
+	return st
+}
+
 // null Transaction for "filling blocks"
 // testing only
 // will need updates on v0.0.8 (string for sender/receiver)
-func nullTransaction() *Transaction {
+func bsTransaction() *Transaction {
 	a := KeyGen()
 	b := KeyGen()
 	sender := MakeAddress(a)
@@ -148,25 +156,25 @@ func nullTransaction() *Transaction {
 	if verify == true {
 		signature = signed
 	}
-	nullTransaction := &Transaction{time.Now().Unix(), sender, receiver, amount, signature, []byte{}, 0}
+	bs := &Transaction{time.Now().Unix(), sender, receiver, amount, signature, []byte{}, 0}
 
         fmt.Println("**************************************************")
 	fmt.Println("START OF NULL TRANSACTION")
-        fmt.Printf("Timestamp: %x\n", nullTransaction.Timestamp)
-        fmt.Printf("Sender Address: %x\n", nullTransaction.Sender)
-        fmt.Printf("Receiver Address: %x\n", nullTransaction.Receiver)
-        fmt.Println("Amount: " , nullTransaction.Amount)
-        fmt.Printf("Signtaure:\n%x\n", nullTransaction.Signature)
+        fmt.Printf("Timestamp: %x\n", bs.Timestamp)
+        fmt.Printf("Sender Address: %x\n", bs.Sender)
+        fmt.Printf("Receiver Address: %x\n", bs.Receiver)
+        fmt.Println("Amount: " , bs.Amount)
+        fmt.Printf("Signtaure:\n%x\n", bs.Signature)
 
-	powT := NewPOWTrans(nullTransaction)
+	powT := NewPOWTrans(bs)
 	nonce, hash := powT.RunTrans()
 
-	nullTransaction.Hash = hash[:]
-	nullTransaction.Nonce = nonce
+	bs.Hash = hash[:]
+	bs.Nonce = nonce
 
-	fmt.Println("Nonce: ", nullTransaction.Nonce)
+	fmt.Println("Nonce: ", bs.Nonce)
 	fmt.Println("END OF NULL TRANSACTION")
         fmt.Println("**************************************************")
 
-	return nullTransaction
+	return bs
 }

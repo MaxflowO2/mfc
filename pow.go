@@ -23,7 +23,9 @@ import (
 
 	"golang.org/x/crypto/sha3"
 )
+
 const targetBits = 16
+
 // Variable set throughout pow.go
 var (
 	maxNonce = math.MaxInt64
@@ -55,7 +57,7 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
 			pow.block.PrevBlockHash,
-			pow.block.Transactions.Hash,
+//			pow.block.Transactions.Hash,
 			IntToHex(pow.block.Timestamp),
 			IntToHex(int64(targetBits)),
 			IntToHex(int64(nonce)),
@@ -69,12 +71,12 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 // pow.Run()
 // Preforms Sha3.Sum256 hash of block data
 // Returns Nonce, Hash
-func (pow *ProofOfWork) Run() (int, []byte) {
+func (pow *ProofOfWork) Run() (int, []byte, int) {
 	var hashInt big.Int
 	var hash [32]byte
 	nonce := 0
 	
-	fmt.Printf("Mining the block containing:\n \"%x\"\n", pow.block.Transactions)
+	fmt.Printf("Mining the block containing:\n \"%v\"\n", pow.block.Transactions)
 	for nonce < maxNonce {
 		data := pow.prepareData(nonce)
 
@@ -90,7 +92,7 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 	}
 	fmt.Print("\n\n")
         fmt.Println("**************************************************")
-	return nonce, hash[:]
+	return nonce, hash[:], targetBits
 }
 
 // pow.Validate()

@@ -20,19 +20,19 @@ import (
 	"encoding/gob"
 	"log"
 	"time"
-	"fmt"
+//	"fmt"
 )
 
 // Block{} struct
 // Used throughout code
 type Block struct {
 	Timestamp     int64
-	Transactions  *Transaction
+	Transactions  []*Transaction
 	PrevBlockHash []byte
 	Hash          []byte
 	Nonce         int
 	Height	      int
-//	Difficulty    int
+	Difficulty    int
 	HashBy      string
 	Signed	      []byte
 }
@@ -56,15 +56,16 @@ func (b *Block) Serialize() []byte {
 // Adds Timestamp, *Transaction, BlockHash, Hash, Nonce to *Block{}
 // Preforms PoW
 // Returns *Block{}
-func NewBlock(trans *Transaction, prevBlockHash []byte, prevHeight int) *Block {
-	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, "fix", []byte{}}
+func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block {
+	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, "fix", []byte{}}
 	pow := NewProofOfWork(block)
-	nonce, hash := pow.Run()
+	nonce, hash, diff := pow.Run()
 
 	prevHeight++
 	block.Height =prevHeight
 	block.Hash = hash[:]
 	block.Nonce = nonce
+	block.Difficulty = diff
 	block.HashBy = LoadAddy()
 	block.Signed = Sign(block.Hash)
 
@@ -77,17 +78,7 @@ func NewBlock(trans *Transaction, prevBlockHash []byte, prevHeight int) *Block {
 // Why? For --alphanet --betanet --mainnet (ect ect) from .JSON file
 // Returns *Block{}
 func NewGenesisBlock() *Block {
-	genesis := &Transaction{}
-	genesis.Timestamp = time.Now().Unix()
-	genesis.Sender = []byte("Alpha-net")
-	genesis.Receiver = []byte("Genesis Block")
-	genesis.Amount = 0
-	genesis.Signature = []byte{}
-	powT := NewPOWTrans(genesis)
-	nonce, hash := powT.RunTrans()
-	genesis.Hash = hash[:]
-	genesis.Nonce = nonce
-        fmt.Println("**************************************************")
+	var genesis []*Transaction
 	return NewBlock(genesis, []byte{}, 0)
 }
 

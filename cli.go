@@ -21,7 +21,7 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"time"
+//	"time"
 )
 
 // CLI responsible for processing command line arguments
@@ -31,9 +31,9 @@ type CLI struct {
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  addblock - with nulltrans")
-	fmt.Println("  autogen - creates a block every 15 seconds with nulltrans")
-	fmt.Println("  nulltrans, creates a basic 'null' transaction")
+	fmt.Println("  addblock - with multiple 'bs-transactions'")
+//	fmt.Println("  autogen - creates a block every 15 seconds with nulltrans")
+	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
 	fmt.Println("  newkeys - creates and stores new set of keys to file")
 	fmt.Println("  loadkeys - loads keys from file")
@@ -62,16 +62,20 @@ func (cli *CLI) loadKeys() {
 }
 
 func (cli *CLI) addBlock() {
-        cli.bc.AddBlock(nullTransaction())
+	var toBlock []*Transaction
+	a := bsTransaction()
+	b := bsTransaction()
+	toBlock = append(toBlock, a, b)
+        cli.bc.AddBlock(toBlock)
         fmt.Println("Success!")
 }
 
-func (cli *CLI) autoGen(t time.Time) {
-	cli.bc.AddBlock(nullTransaction())
-}
+//func (cli *CLI) autoGen(t time.Time) {
+//	cli.bc.AddBlock(bsTransaction())
+//}
 
-func (cli *CLI) nullTrans() {
-	nullTransaction()
+func (cli *CLI) bsTrans() {
+	bsTransaction()
 }
 
 func (cli *CLI) printChain() {
@@ -80,11 +84,12 @@ func (cli *CLI) printChain() {
 	for {
 		block := bci.Next()
 		fmt.Printf("Block Height: %v\n", block.Height)
-		fmt.Printf("Prev. hash: %x\n", block.PrevBlockHash)
-		fmt.Printf("Transactions: %x\n", block.Transactions)
+		fmt.Printf("Previous Hash: %x\n", block.PrevBlockHash)
+		fmt.Printf("Transactions in Block:\n%v\n", block.Transactions)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := NewProofOfWork(block)
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
+		fmt.Printf("Difficulty: %v\n", block.Difficulty)
 		fmt.Printf("Hashed By: %s\n", block.HashBy)
 		fmt.Printf("Signature: %x\n", block.Signed)
 		fmt.Println()
@@ -101,8 +106,8 @@ func (cli *CLI) Run() {
 
 	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
-	nullTrans := flag.NewFlagSet("nulltrans", flag.ExitOnError)
+//	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
+	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
         loadKeys := flag.NewFlagSet("loadkeys", flag.ExitOnError)
         newKeys := flag.NewFlagSet("newkeys", flag.ExitOnError)
 //	addBlockData := addBlockCmd.String("data", "", "Block data")
@@ -113,11 +118,11 @@ func (cli *CLI) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
-	case "autogen":
-		err := autoGen.Parse(os.Args[2:])
-		if err != nil {
-			log.Panic(err)
-		}
+//	case "autogen":
+//		err := autoGen.Parse(os.Args[2:])
+//		if err != nil {
+//			log.Panic(err)
+//		}
         case "loadkeys":
                 err := loadKeys.Parse(os.Args[2:])
                 if err != nil {
@@ -128,8 +133,8 @@ func (cli *CLI) Run() {
                 if err != nil {
                         log.Panic(err)
                 }
-        case "nulltrans":
-                err := nullTrans.Parse(os.Args[2:])
+        case "bstrans":
+                err := bsTrans.Parse(os.Args[2:])
                 if err != nil {
                         log.Panic(err)
                 }
@@ -148,12 +153,12 @@ func (cli *CLI) Run() {
 		cli.addBlock()
 	}
 
-	if autoGen.Parsed() {
-	        Repeat(15*time.Second, cli.autoGen)
-	}
+//	if autoGen.Parsed() {
+//	        Repeat(15*time.Second, cli.autoGen)
+//	}
 
-        if nullTrans.Parsed() {
-        	cli.nullTrans()
+        if bsTrans.Parsed() {
+        	cli.bsTrans()
         }
 
 	if printChainCmd.Parsed() {

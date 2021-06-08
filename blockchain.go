@@ -90,7 +90,7 @@ type BlockchainIterator struct {
 // Opens blockchain.db, pulls lashHash
 // Calls NewBlock(trans, lastHash)
 // Calls Serialize() and adds to blocksBucket
-func (bc *Blockchain) AddBlock(trans *Transaction) {
+func (bc *Blockchain) AddBlock(trans []*Transaction) {
 	var lastHash []byte
 	// For Height
 	var lastBlock *Block
