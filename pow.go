@@ -51,7 +51,7 @@ func NewProofOfWork(b *Block) *ProofOfWork {
 	return pow
 }
 
-// This is a bullshit version of MerkelRoot.
+// This is a bullshit version of MerkleRoot.
 // sliceHash([]*Trans)
 // Gets the bytes of all hashes, in []*Transaction
 // Returns Sha3.Sum256 of []*Transaction
