@@ -29,7 +29,10 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+// Const for BoltDB
+// Saved two ways as key/pairs
 const addressBucket = "address"
+const addressHexBucket = "addresshex"
 
 // MFCAddress {}
 // Struct will be used throughout code
@@ -144,6 +147,9 @@ func DeserializeAddress(d []byte) *MFCAddress {
 
 // AddAddress(mfc MFCAddress)
 // Adds MFCAddress to Bolt.DB
+// Method 1: MFCxAddy (string) as Key/Value as Serialize() in StringBucket
+// Method 2: MFCxHex ([]byte) as Key/Value as Serialize() in HexBucket
+// Logic, will print verbose in string, will hash with []byte
 func AddAddress(mfc MFCAddress) {
 	db, err := bolt.Open(dbFile, 0644, nil)
 		if err != nil {
@@ -167,9 +173,28 @@ func AddAddress(mfc MFCAddress) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+        err = db.Update(func(tx *bolt.Tx) error {
+                bucket, err := tx.CreateBucketIfNotExists([]byte(addressHexBucket))
+                if err != nil {
+                        return err
+                }
+
+                err = bucket.Put(mfc.MFCxHex, mfc.Serialize())
+                if err != nil {
+                        return err
+                }
+                return nil
+        })
+
+        if err != nil {
+                log.Fatal(err)
+        }
+
 }
+
 // RetrieveMFCAddress(s string)
-// Opens DB, finds address string s
+// Opens DB, finds address string s in StringBucket
 // Returns MFCAddress of user
 func RetreiveMFCAddress(s string) *MFCAddress {
         db, err := bolt.Open(dbFile, 0644, nil)
@@ -197,3 +222,31 @@ func RetreiveMFCAddress(s string) *MFCAddress {
 	return mfcaddy
 }
 
+// RetrieveMFCAddressHex(b []byte)
+// Opens DB, finds address []byte b in HexBucket
+// Returns MFCAddress of user
+func RetreiveMFCAddressHex(b []byte) *MFCAddress {
+        db, err := bolt.Open(dbFile, 0644, nil)
+                if err != nil {
+                        log.Fatal(err)
+                }
+        defer db.Close()
+
+        var mfcaddy *MFCAddress
+        err = db.View(func(tx *bolt.Tx) error {
+                bucket := tx.Bucket([]byte(addressHexBucket))
+                if bucket == nil {
+                        return fmt.Errorf("Bucket %q not found!", addressHexBucket)
+                }
+
+                mfcaddy = DeserializeAddress(bucket.Get(b))
+
+                return nil
+                })
+
+                if err != nil {
+                        log.Fatal(err)
+                }
+
+        return mfcaddy
+}
