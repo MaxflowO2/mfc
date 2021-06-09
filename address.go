@@ -25,6 +25,8 @@ import (
 	"log"
 	"encoding/json"
 	"io/ioutil"
+	"fmt"
+	"github.com/boltdb/bolt"
 )
 
 const addressBucket = "address"
@@ -140,12 +142,58 @@ func DeserializeAddress(d []byte) *MFCAddress {
         return &addy
 }
 
-// AddAddress()
+// AddAddress(mfc MFCAddress)
 // Adds MFCAddress to Bolt.DB
-//func AddAddress() {
-//	db, err := blot.Open(dbFile, 0600, nil)
-//	if err != nil {
-//		log.Panic(err)
-//	}
-//	err = db.Update(func(tx *bolt.Tx) error {
-//		b := tx.Bucket([]byte(addressBucket))
+func AddAddress(mfc MFCAddress) {
+	db, err := bolt.Open(dbFile, 0644, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+	defer db.Close()
+
+	err = db.Update(func(tx *bolt.Tx) error {
+ 		bucket, err := tx.CreateBucketIfNotExists([]byte(addressBucket))
+		if err != nil {
+			return err
+		}
+
+		err = bucket.Put([]byte(mfc.MFCxAddy), mfc.Serialize())
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+// RetrieveMFCAddress(s string)
+// Opens DB, finds address string s
+// Returns MFCAddress of user
+func RetreiveMFCAddress(s string) *MFCAddress {
+        db, err := bolt.Open(dbFile, 0644, nil)
+                if err != nil {
+                        log.Fatal(err)
+                }
+        defer db.Close()
+
+	var mfcaddy *MFCAddress
+	err = db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(addressBucket))
+		if bucket == nil {
+			return fmt.Errorf("Bucket %q not found!", addressBucket)
+		}
+
+		mfcaddy = DeserializeAddress(bucket.Get([]byte(s)))
+
+		return nil
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	return mfcaddy
+}
+
