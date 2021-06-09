@@ -33,6 +33,7 @@ type CLI struct {
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  addblock - with multiple 'bs-transactions'")
+	fmt.Println("  addtodb - sends your Address to BoltDB")
 //	fmt.Println("  autogen - creates a block every 15 seconds with nulltrans")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
@@ -58,13 +59,18 @@ func (cli *CLI) addBlock() {
 //	cli.bc.AddBlock(bsTransaction())
 //}
 
+func (cli *CLI) addToDB() {
+        addy := LoadAddress()
+        AddAddress(addy)
+}
+
 func (cli *CLI) bsTrans() {
 	bsTransaction()
 }
 
 func (cli *CLI) printChain() {
 	bci := cli.bc.Iterator()
-
+//	var addy *MFCAddress
 	for {
 		block := bci.Next()
 		fmt.Printf("Block Height: %v\n", block.Height)
@@ -74,7 +80,9 @@ func (cli *CLI) printChain() {
 		pow := NewProofOfWork(block)
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
 		fmt.Printf("Difficulty: %v\n", block.Difficulty)
-		fmt.Printf("Hashed By: %x\n", block.HashBy)
+		//hangs
+//		addy = RetreiveMFCAddressHex(block.HashBy)
+		fmt.Printf("Hashed By: %s\n", block.HashBy)
 		fmt.Printf("Signature: %x\n", block.Signed)
 		fmt.Println()
 
@@ -90,6 +98,7 @@ func (cli *CLI) Run() {
 
 	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
+	addToDB := flag.NewFlagSet("addtodb", flag.ExitOnError)
 //	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
 	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
 //	addBlockData := addBlockCmd.String("data", "", "Block data")
@@ -105,6 +114,12 @@ func (cli *CLI) Run() {
 //		if err != nil {
 //			log.Panic(err)
 //		}
+
+	case "addtodb":
+		err := addToDB.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
 
         case "bstrans":
                 err := bsTrans.Parse(os.Args[2:])
@@ -129,6 +144,10 @@ func (cli *CLI) Run() {
 //	if autoGen.Parsed() {
 //	        Repeat(15*time.Second, cli.autoGen)
 //	}
+
+	if addToDB.Parsed() {
+		cli.addToDB()
+	}
 
         if bsTrans.Parsed() {
         	cli.bsTrans()

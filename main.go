@@ -17,8 +17,8 @@
 package main
 
 import (
-//    "fmt"
-    "os"
+//	"fmt"
+	"os"
 )
 
 // fileExists(path string)
@@ -65,6 +65,16 @@ func main() {
 //		addy := LoadAddress()
 //		fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	}
+
+	// Sends MFCAddress to mfc.db, crutial step - passed
+//	addy := LoadAddress()
+//	AddAddress(addy)
+//	fmt.Println("added to database")
+//	testOne := RetreiveMFCAddress(addy.MFCxAddy)
+//	fmt.Printf("from one: %s\n", testOne.MFCxAddy)
+//	testTwo := RetreiveMFCAddressHex(addy.MFCxHex)
+//	fmt.Printf("from two: %s\n", testTwo.MFCxAddy)
+//	fmt.Printf("Asked from this: %s\n", addy.MFCxAddy)
 
 	bc := NewBlockchain()
 	defer bc.db.Close()
