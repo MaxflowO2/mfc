@@ -27,15 +27,15 @@ import (
 // Block{} struct
 // Used throughout code
 type Block struct {
-	Timestamp     int64
-	Transactions  []*Transaction
-	PrevBlockHash []byte
-	Hash          []byte
-	Nonce         int
-	Height	      int
-	Difficulty    int
-	HashBy      string
-	Signed	      []byte
+	Timestamp	int64
+	Transactions	[]*Transaction
+	PrevBlockHash	[]byte
+	Hash		[]byte
+	Nonce		int
+	Height		int
+	Difficulty	int
+	HashBy		[]byte
+	Signed		[]byte
 }
 
 // b.Serialize()
@@ -58,7 +58,7 @@ func (b *Block) Serialize() []byte {
 // Preforms PoW
 // Returns *Block{}
 func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block {
-	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, "fix", []byte{}}
+	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, LoadAddressHex(), []byte{}}
 	pow := NewProofOfWork(block)
 	nonce, hash, diff := pow.Run()
 
@@ -67,7 +67,6 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 	block.Hash = hash[:]
 	block.Nonce = nonce
 	block.Difficulty = diff
-	block.HashBy = LoadAddy()
 	block.Signed = Sign(block.Hash)
 
 	return block

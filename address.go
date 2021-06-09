@@ -33,59 +33,79 @@ const addressBucket = "address"
 // Struct will be used throughout code
 // Will save to DB under Address Basket
 type MFCAddress struct {
-	MFCxAddy string
-	PublicKey ed25519.PublicKey
+	MFCxAddy 	string
+	MFCxHex		[]byte
+	PublicKey 	ed25519.PublicKey
 }
 
-// LoadAddress()
-// Opens MFCKeys.JSON and returns []byte Address
-// v0.0.8 update to String
-func LoadAddress() []byte {
-	keys := LoadKeys()
-	pre := MakeAddress(keys)
-	addy := pre[:]
-	return addy
-}
-
-// MakeAddress(MFCKeys)
-// Takes MFCKeys {} and returns []byte Address
-// v0.0.8 update to string
-func MakeAddress(mfc MFCKeys) []byte {
+// HashKeys(MFCKeys)
+// Takes MFCKeys {} and returns []byte Hash
+func HashKeys(mfc MFCKeys) []byte {
 	pre := sha3.Sum256(mfc.PublicKey)
         addy := pre[:]
 	return addy
 }
 
-// SaveAddress()
-// Opens MFCKeys.JSON and makes MFCAddress{}
-func SaveAddress() {
+// MakeMFCAddyString()
+// Returns MFCx String for address
+func MakeMFCAddyString() string {
 	mfcx := "MFCx"
 	keys := LoadKeys()
-	addypre := MakeAddress(keys)
+	addypre := HashKeys(keys)
 	addy := addypre[12:]
 	addyString := hex.EncodeToString(addy)
 	mfcxaddy := mfcx + addyString
+	return mfcxaddy
+}
+
+// MakeMFCAddyByte()
+// Returns MFCx []Byte for address
+func MakeMFCAddyHex() []byte {
+	mfcx := "MFCx"
+	keys := LoadKeys()
+	addypre := HashKeys(keys)
+	addy := addypre[12:]
+	mfcxhex := append([]byte(mfcx), addy[:]...)
+	return mfcxhex
+}
+
+// SaveAddress()
+// Opens MFCKeys.JSON and makes MFCAddress{}
+func SaveAddress() {
+	keys := LoadKeys()
 	newaddy := MFCAddress{}
-	newaddy.MFCxAddy = mfcxaddy
+	newaddy.MFCxAddy = MakeMFCAddyString()
+	newaddy.MFCxHex = MakeMFCAddyHex()
 	newaddy.PublicKey = keys.PublicKey
         file, _ := json.MarshalIndent(newaddy, "", " ")
         _ = ioutil.WriteFile("MFCAddress.json", file, 0644)
 }
 
-// LoadKeys()
-// Opens MFCKeys.JSON and returns MFCKeys{}
-func LoadAddy() string {
+// LoadAddress()
+// Opens MFCAddress.JSON and returns MFCAddress{}
+func LoadAddress() MFCAddress {
+        file, _ := ioutil.ReadFile("MFCAddress.json")
+        addy := MFCAddress{}
+        _ = json.Unmarshal([]byte(file), &addy)
+        return addy
+}
+
+// LoadAddressString()
+// Opens MFCAddress.JSON and returns String Address
+func LoadAddressString() string {
         file, _ := ioutil.ReadFile("MFCAddress.json")
         addy := MFCAddress{}
         _ = json.Unmarshal([]byte(file), &addy)
         return addy.MFCxAddy
 }
 
-func LoadMFCAddy() MFCAddress {
-        file, _ := ioutil.ReadFile("MFCAddress.json")
-        addy := MFCAddress{}
-        _ = json.Unmarshal([]byte(file), &addy)
-        return addy
+// LoadAddressHex()
+// Opens MFCAddress.JSON and returns Hex Address
+func LoadAddressHex() []byte {
+	file, _ := ioutil.ReadFile("MFCAddress.json")
+	addy := MFCAddress{}
+	_ = json.Unmarshal([]byte(file), &addy)
+	return addy.MFCxHex
 }
 
 // Database functions below

@@ -149,8 +149,8 @@ func SliceTransaction(t *Transaction, st []*Transaction) []*Transaction {
 func bsTransaction() *Transaction {
 	a := KeyGen()
 	b := KeyGen()
-	sender := MakeAddress(a)
-	receiver := MakeAddress(b)
+	sender := HashKeys(a)
+	receiver := HashKeys(b)
 	var amount uint64 = 0
 	message := bytes.Join(
                 [][]byte{

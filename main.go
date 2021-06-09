@@ -57,12 +57,12 @@ func main() {
 
 	if addyExist {
 //		fmt.Println("MFCAddress.json found...")
-//		addy := LoadAddy()
+//		addy := LoadAddress()
 //		fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	} else {
 //		fmt.Println("MFCAddress.json was not found, generating Address.")
 		SaveAddress()
-//		addy := LoadAddy()
+//		addy := LoadAddress()
 //		fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	}
 

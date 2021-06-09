@@ -74,7 +74,7 @@ func (cli *CLI) printChain() {
 		pow := NewProofOfWork(block)
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
 		fmt.Printf("Difficulty: %v\n", block.Difficulty)
-		fmt.Printf("Hashed By: %s\n", block.HashBy)
+		fmt.Printf("Hashed By: %x\n", block.HashBy)
 		fmt.Printf("Signature: %x\n", block.Signed)
 		fmt.Println()
 
