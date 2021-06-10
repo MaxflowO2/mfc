@@ -47,11 +47,7 @@ func (cli *CLI) validateArgs() {
 }
 
 func (cli *CLI) addBlock() {
-	var toBlock []*Transaction
-	a := bsTransaction()
-	b := bsTransaction()
-	toBlock = append(toBlock, a, b)
-        cli.bc.AddBlock(toBlock)
+	AlphaGenesisBlock()
         fmt.Println("Success!")
 }
 

@@ -23,6 +23,10 @@ import(
         "math"
         "math/big"
 	"crypto/ed25519"
+	"encoding/json"
+	"encoding/hex"
+	"io/ioutil"
+	"github.com/boltdb/bolt"
         "golang.org/x/crypto/sha3"
 )
 
@@ -44,6 +48,7 @@ type Transaction struct {
 	Sender		[]byte
 	Receiver	[]byte
 	Amount		uint64
+	Message		string
 	Signature	[]byte
 	Hash		[]byte
 	Nonce		int
@@ -83,6 +88,7 @@ func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 			powT.transaction.Sender,
 			powT.transaction.Receiver,
 			IntToHex(int64(powT.transaction.Amount)),
+			[]byte(powT.transaction.Message),
 			powT.transaction.Signature,
 			IntToHex(int64(targetTrans)),
 			IntToHex(int64(tnonce)),
@@ -166,7 +172,7 @@ func bsTransaction() *Transaction {
 	if verify == true {
 		signature = signed
 	}
-	bs := &Transaction{time.Now().Unix(), sender, receiver, amount, signature, []byte{}, 0}
+	bs := &Transaction{time.Now().Unix(), sender, receiver, amount, "", signature, []byte{}, 0}
 
 	fmt.Println("START OF TRANSACTION")
         fmt.Printf("Timestamp: %x\n", bs.Timestamp)
@@ -187,3 +193,37 @@ func bsTransaction() *Transaction {
 	return bs
 }
 
+// AlphaNet Genesis use
+func AlphaGenesis() *Transaction {
+	var alpha *Transaction
+	alpha = &Transaction{1623289682, []byte{}, []byte{}, 0, "AlphaNet of MaxFlowChain, created for testing purposes on 6/9/2021, www.nytimes.com/2021/06/09/technology/bitcoin-untraceable-pipeline-ransomware.html issues 101", []byte{}, []byte{}, 0}
+	alpha.Hash = []byte{0, 193, 197, 91, 204, 202, 150, 0, 152, 178, 150, 35, 108, 152, 68, 106, 19, 114, 152, 94, 9, 131, 80, 44, 246, 98, 103, 106, 207, 218, 75, 96,}
+	alpha.Nonce = 314
+
+        header := "alpha/trans/"
+        dotblock := ".trans"
+        filename := header + hex.EncodeToString(alpha.Hash) + dotblock
+        file, _ := json.MarshalIndent(alpha, "", " ")
+        _ = ioutil.WriteFile(filename, file, 0644)
+
+        data, err := json.Marshal(alpha)
+        if err != nil {
+                fmt.Errorf("Couldn't Marshal AlphaNet Genesis Transaction, %v", err)
+        	}
+
+        db, err := setupDB()
+        if err != nil {
+                fmt.Errorf("Couldn't open mfc.db, %v", err)
+        	}
+        defer db.Close()
+
+        err = db.Update(func (tx *bolt.Tx) error {
+                err := tx.Bucket([]byte(transactionBucket)).Put(alpha.Hash, data)
+                if err != nil {
+                        return fmt.Errorf("Alpha Genesis did not insert into transactionBucket, code: %v", err)
+                	}
+                return nil
+        })
+
+	return alpha
+}

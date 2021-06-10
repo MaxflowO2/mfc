@@ -23,9 +23,6 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const dbFile = "mfc.db"
-const blocksBucket = "blocks"
-
 // Blockchain{} struct
 type Blockchain struct {
 	tip []byte

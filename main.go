@@ -17,7 +17,8 @@
 package main
 
 import (
-//	"fmt"
+	"time"
+	"fmt"
 	"os"
 )
 
@@ -76,9 +77,12 @@ func main() {
 //	fmt.Printf("from two: %s\n", testTwo.MFCxAddy)
 //	fmt.Printf("Asked from this: %s\n", addy.MFCxAddy)
 
-	bc := NewBlockchain()
-	defer bc.db.Close()
+//	startDB()
+	fmt.Printf("Unix time is: %v\n", time.Now().Unix())
+	AlphaGenesisBlock()
+//	bc := NewBlockchain()
+//	defer bc.db.Close()
 
-	cli := CLI{bc}
-	cli.Run()
+//	cli := CLI{bc}
+//	cli.Run()
 }

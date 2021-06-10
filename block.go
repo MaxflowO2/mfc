@@ -19,9 +19,13 @@ package main
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
+	"encoding/hex"
+	"io/ioutil"
 	"log"
 	"time"
-//	"fmt"
+	"fmt"
+	"github.com/boltdb/bolt"
 )
 
 // Block{} struct
@@ -80,6 +84,59 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 func NewGenesisBlock() *Block {
 	var genesis []*Transaction
 	return NewBlock(genesis, []byte{}, 0)
+}
+
+func AlphaGenesisBlock() {
+	var alphaTrans []*Transaction
+	theOne := AlphaGenesis()
+	alphaTrans = append(alphaTrans, theOne)
+	alpha := &Block{1623289682, alphaTrans, []byte{}, []byte{}, 0, 1, 0, []byte{}, []byte{}}
+	// been hashed, values below are correct
+	alpha.Hash = []byte{0, 0, 91, 237, 75, 239, 186, 156, 203, 254, 5, 66, 134, 202, 179, 200, 24, 123, 177, 62, 127, 223, 166, 39, 79, 139, 178, 237, 146, 253, 100, 214}
+	alpha.Nonce = 55995
+	alpha.Difficulty = 16
+
+	header := "alpha/block/"
+	dotblock := ".block"
+	filename := header + hex.EncodeToString(alpha.Hash) + dotblock
+	file, _ := json.MarshalIndent(alpha, "", " ")
+	_ = ioutil.WriteFile(filename, file, 0644)
+
+	data, err := json.Marshal(alpha)
+	if err != nil {
+		fmt.Errorf("Couldn't Marshal AlphaNet Genesis Block, %v", err)
+	}
+
+	transdata, err := json.Marshal(theOne)
+	if err != nil{
+		fmt.Errorf("Couldn't Marshal the One Transaction in AlphaNet Genesis Block, %v", err)
+	}
+
+	db, err := setupDB()
+	if err != nil {
+		fmt.Errorf("Couldn't open mfc.db, %v", err)
+	}
+	defer db.Close()
+
+	err = db.Update(func (tx *bolt.Tx) error {
+		err := tx.Bucket([]byte(blocksBucket)).Put(alpha.Hash, data)
+		if err != nil {
+			return fmt.Errorf("Alpha Genesis did not insert into mfc.db blocksBucket, code: %v", err)
+			}
+		
+		err = tx.Bucket([]byte(blocksBucket)).Put([]byte("1"), alpha.Hash)
+		if err != nil {
+			return fmt.Errorf("Pointer Key not inserted at byte '1', code: %v", err)
+			}
+
+		err = tx.Bucket([]byte(blocksBucket)).Bucket([]byte(transInBlock)).Put(theOne.Hash, transdata)
+                if err != nil {
+			tx.Bucket([]byte(transactionBucket)).Delete(theOne.Hash)
+                        return fmt.Errorf("Alpha Genesis Transaction did not insert into mfc.db blocksBucket.transInBlock, code: %v", err)
+                	}
+                return nil
+
+	})
 }
 
 // DeserializeBlock(d []byte)
