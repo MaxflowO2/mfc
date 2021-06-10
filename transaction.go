@@ -220,8 +220,8 @@ func AlphaGenesis() *Transaction {
 	return alpha
 }
 
-// t.SerealizeTrans()
-// Seralized trasaction for Bolt.DB
+// t.SerializeTrans()
+// *Transaction to JSON for Bolt.DB
 // Returns []byte
 func (t *Transaction) Serialize() []byte {
 	value, err := json.Marshal(t)
@@ -233,7 +233,7 @@ func (t *Transaction) Serialize() []byte {
 	return value
 }
 // DeserializeTrans(d []byte)
-// Deserialize a block
+// JSON to *Transacation for Bolt.DB
 // Returns *Transaction
 func DeserializeTrans(d []byte) *Transaction {
         var trans Transaction

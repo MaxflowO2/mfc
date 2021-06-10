@@ -79,8 +79,8 @@ func main() {
 
 //	startDB()
 	AlphaGenesisBlock()
-//	bc := NewBlockchain()
-//	defer bc.db.Close()
+	bc := NewBlockchain()
+	defer bc.db.Close()
 
 	cli := CLI{}
 	cli.Run()

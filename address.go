@@ -108,24 +108,32 @@ func LoadAddressHex() []byte {
 
 // Database functions below
 
-// MarshMFCAddy()
-// MFCAddress to JSON, use for Bolt.DB
+// a.Serialize()
+// *MFCAddress to JSON for Bolt.DB
 // Returns []byte
-func MarshMFCAddy(mfc MFCAddress) []byte {
-        value, err := json.Marshal(mfc)
+func (a *MFCAddress) Serialize() []byte {
+        value, err := json.Marshal(a)
+
 	if err != nil {
-		fmt.Errorf("Cannot JSON Marshal %v", mfc)
+		fmt.Errorf("Cannot JSON Marshal %v\n", a)
 	}
+
         return value
 }
 
-// UnmarshMFCAddy(d []byte)
-// JSON to MFCAddress{}, use for Bolt.DB
+// DeserializeAddy(d []byte)
+// JSON to *MFCAddress for Bolt.DB
 // Returns MFCAddress
-func UnmarshMFCAddy(d []byte) MFCAddress {
-	value := MFCAddress{}
-	_ = json.Unmarshal(d, &value)
-        return value
+func DeserializeAddy(d []byte) *MFCAddress {
+	var addy MFCAddress
+
+	err := json.Unmarshal(d, &addy)
+
+	if err != nil {
+		fmt.Errorf("Couldn't Unmarshal %v\n", &addy)
+	}
+
+        return &addy
 }
 
 // AddAddress(mfc MFCAddress)
@@ -146,7 +154,7 @@ func AddAddress(mfc MFCAddress) {
 			return err
 		}
 
-		err = bucket.Put([]byte(mfc.MFCxAddy), MarshMFCAddy(mfc))
+		err = bucket.Put([]byte(mfc.MFCxAddy), mfc.Serialize())
 		if err != nil {
 			return err
 		}
@@ -163,7 +171,7 @@ func AddAddress(mfc MFCAddress) {
                         return err
                 }
 
-                err = bucket.Put(mfc.MFCxHex, MarshMFCAddy(mfc))
+                err = bucket.Put(mfc.MFCxHex, mfc.Serialize())
                 if err != nil {
                         return err
                 }
