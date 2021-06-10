@@ -4,8 +4,9 @@ This is gaining momentum<br>
 <br>
 Currently Completed, and what to expect soon:<br>
 <ul style="list-style: circle">
+  <li>CLI: Under revision</li>
   <li>Crypto/Keys: Completed.</li>
-  <li>Crypto/Address: Under revision, BoltDB issues</li>
+  <li>Crypto/Address: Under revision</li>
   <li>Transactions: Under revision, issue with pow/string values, database missing</li>
   <li>Smart Contract Language: Started, not finished as of yet</li>
   <li>Mempool/Txpool Protocol: Research and Development phase</li>
