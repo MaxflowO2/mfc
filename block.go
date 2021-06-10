@@ -17,12 +17,9 @@
 package main
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"encoding/hex"
 	"io/ioutil"
-	"log"
 	"time"
 	"fmt"
 	"github.com/boltdb/bolt"
@@ -46,15 +43,13 @@ type Block struct {
 // Serialized block for Bolt.DB
 // Returns []byte
 func (b *Block) Serialize() []byte {
-	var result bytes.Buffer
-	encoder := gob.NewEncoder(&result)
+	value, err := json.Marshal(b)
 
-	err := encoder.Encode(b)
 	if err != nil {
-		log.Panic(err)
+		fmt.Errorf("%v did not Marshal\n", b)
 	}
 
-	return result.Bytes()
+	return value
 }
 
 // NewBlock(trans *Transaction, prevBlockHash []Byte)
@@ -145,10 +140,10 @@ func AlphaGenesisBlock() {
 func DeserializeBlock(d []byte) *Block {
 	var block Block
 
-	decoder := gob.NewDecoder(bytes.NewReader(d))
-	err := decoder.Decode(&block)
+	err := json.Unmarshal(d, &block)
+
 	if err != nil {
-		log.Panic(err)
+		fmt.Errorf("%v, couldn't Unmarshal\n", &block)
 	}
 
 	return &block

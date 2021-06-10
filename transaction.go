@@ -30,15 +30,6 @@ import(
         "golang.org/x/crypto/sha3"
 )
 
-// Our Merkel Root struct for now
-//type merkelRoot struct {
-//	transHash []byte
-//	mRoot []byte
-//}
-
-// The global variable for solo only
-//var MFCRoot merkelRoot
-
 // Transaction{} struct
 // Basic state change of blockchain/db
 // Used throughout as *Transaction
@@ -143,6 +134,7 @@ func (powT *powTransaction) ValidateTrans() bool {
 
 // SliceTransaction(t *Transaction)
 // Add to slice of []*Transaction
+// Don't know if i'll continue to use
 // Returs []*Transaction
 func SliceTransaction(t *Transaction, st []*Transaction) []*Transaction {
 	st = append(st, t)
@@ -226,4 +218,31 @@ func AlphaGenesis() *Transaction {
         })
 
 	return alpha
+}
+
+// t.SerealizeTrans()
+// Seralized trasaction for Bolt.DB
+// Returns []byte
+func (t *Transaction) Serialize() []byte {
+	value, err := json.Marshal(t)
+
+	if err != nil {
+		fmt.Errorf("%v, couldn't Marshal\n", t)
+	}
+
+	return value
+}
+// DeserializeTrans(d []byte)
+// Deserialize a block
+// Returns *Transaction
+func DeserializeTrans(d []byte) *Transaction {
+        var trans Transaction
+
+        err := json.Unmarshal(d, &trans)
+
+        if err != nil {
+                fmt.Errorf("%v, couldn't Unmarshal\n", &trans)
+        }
+
+        return &trans
 }
