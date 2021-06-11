@@ -22,7 +22,7 @@ import (
 	"io/ioutil"
 	"time"
 	"fmt"
-	"github.com/boltdb/bolt"
+//	"github.com/boltdb/bolt"
 )
 
 // Block{} struct
@@ -68,6 +68,18 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 	block.Difficulty = diff
 	block.Signed = Sign(block.Hash)
 
+        header := "alpha/block/"
+        dotblock := ".block"
+        filename := header + hex.EncodeToString(block.Hash) + dotblock
+        file, err := json.MarshalIndent(block, "", " ")
+        if err != nil {
+                fmt.Errorf("No Marshal\n")
+        }
+        err = ioutil.WriteFile(filename, file, 0644)
+        if err != nil{
+                fmt.Errorf("No file\n")
+        }
+
 	return block
 }
 
@@ -81,7 +93,7 @@ func NewGenesisBlock() *Block {
 	return NewBlock(genesis, []byte{}, 0)
 }
 
-func AlphaGenesisBlock() {
+func AlphaGenesisBlock() *Block {
 	var alphaTrans []*Transaction
 	theOne := AlphaGenesis()
 	alphaTrans = append(alphaTrans, theOne)
@@ -94,45 +106,57 @@ func AlphaGenesisBlock() {
 	header := "alpha/block/"
 	dotblock := ".block"
 	filename := header + hex.EncodeToString(alpha.Hash) + dotblock
-	file, _ := json.MarshalIndent(alpha, "", " ")
-	_ = ioutil.WriteFile(filename, file, 0644)
-
-	data, err := json.Marshal(alpha)
+	file, err := json.MarshalIndent(alpha, "", " ")
 	if err != nil {
-		fmt.Errorf("Couldn't Marshal AlphaNet Genesis Block, %v", err)
+		fmt.Errorf("No Marshal\n")
 	}
-
-	transdata, err := json.Marshal(theOne)
+	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil{
-		fmt.Errorf("Couldn't Marshal the One Transaction in AlphaNet Genesis Block, %v", err)
+		fmt.Errorf("No file\n")
 	}
 
-	db, err := setupDB()
-	if err != nil {
-		fmt.Errorf("Couldn't open mfc.db, %v", err)
-	}
-	defer db.Close()
-
-	err = db.Update(func (tx *bolt.Tx) error {
-		err := tx.Bucket([]byte(blocksBucket)).Put(alpha.Hash, data)
-		if err != nil {
-			return fmt.Errorf("Alpha Genesis did not insert into mfc.db blocksBucket, code: %v", err)
-			}
-		
-		err = tx.Bucket([]byte(blocksBucket)).Put([]byte("1"), alpha.Hash)
-		if err != nil {
-			return fmt.Errorf("Pointer Key not inserted at byte '1', code: %v", err)
-			}
-
-		err = tx.Bucket([]byte(blocksBucket)).Bucket([]byte(transInBlock)).Put(theOne.Hash, transdata)
-                if err != nil {
-			tx.Bucket([]byte(transactionBucket)).Delete(theOne.Hash)
-                        return fmt.Errorf("Alpha Genesis Transaction did not insert into mfc.db blocksBucket.transInBlock, code: %v", err)
-                	}
-                return nil
-
-	})
+	return alpha
 }
+
+//	data, err := json.Marshal(alpha)
+//	if err != nil {
+//		fmt.Errorf("Couldn't Marshal AlphaNet Genesis Block, %v\n", err)
+//	}
+
+//	transdata, err := json.Marshal(theOne)
+//	if err != nil{
+//		fmt.Errorf("Couldn't Marshal the One Transaction in AlphaNet Genesis Block, %v\n", err)
+//	}
+
+//	db, err := setupDB()
+//	if err != nil {
+//		fmt.Errorf("Couldn't open mfc.db, %v\n", err)
+//	}
+//	defer db.Close()
+
+//	err = db.Update(func (tx *bolt.Tx) error {
+//		err := tx.Bucket([]byte(blocksBucket)).Put(alpha.Hash, alpha.Serialize())
+//		if err != nil {
+//			return fmt.Errorf("Alpha Genesis did not insert into mfc.db blocksBucket, code: %v\n", err)
+//			}
+		
+//		err = tx.Bucket([]byte(blocksBucket)).Put([]byte("1"), alpha.Hash)
+//		if err != nil {
+//			return fmt.Errorf("Pointer Key not inserted at byte '1', code: %v\n", err)
+//			}
+
+//		err = tx.Bucket([]byte(blocksBucket)).Bucket([]byte(transInBlock)).Put(theOne.Hash, theOne.Serialize())
+//		if err != nil {
+//			return fmt.Errorf("Alpha Genesis Transaction did not insert into mfc.db blocksBucket.transInBlock, code: %v\n", err)
+//			} else {
+//			tx.Bucket([]byte(transactionBucket)).Delete(theOne.Hash)
+//			}
+//		return nil
+
+//	})
+
+//	return alpha
+//}
 
 // DeserializeBlock(d []byte)
 // Deserialize a block

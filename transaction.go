@@ -26,7 +26,7 @@ import(
 	"encoding/json"
 	"encoding/hex"
 	"io/ioutil"
-	"github.com/boltdb/bolt"
+//	"github.com/boltdb/bolt"
         "golang.org/x/crypto/sha3"
 )
 
@@ -198,25 +198,25 @@ func AlphaGenesis() *Transaction {
         file, _ := json.MarshalIndent(alpha, "", " ")
         _ = ioutil.WriteFile(filename, file, 0644)
 
-        data, err := json.Marshal(alpha)
-        if err != nil {
-                fmt.Errorf("Couldn't Marshal AlphaNet Genesis Transaction, %v", err)
-        	}
+//        data, err := json.Marshal(alpha)
+//        if err != nil {
+//                fmt.Errorf("Couldn't Marshal AlphaNet Genesis Transaction, %v", err)
+//        	}
+//
+//        db, err := setupDB()
+//        if err != nil {
+//                fmt.Errorf("Couldn't open mfc.db, %v", err)
+//        	}
+//        defer db.Close()
 
-        db, err := setupDB()
-        if err != nil {
-                fmt.Errorf("Couldn't open mfc.db, %v", err)
-        	}
-        defer db.Close()
-
-        err = db.Update(func (tx *bolt.Tx) error {
-                err := tx.Bucket([]byte(transactionBucket)).Put(alpha.Hash, data)
-                if err != nil {
-                        return fmt.Errorf("Alpha Genesis did not insert into transactionBucket, code: %v", err)
-                	}
-                return nil
-        })
-
+//        err = db.Update(func (tx *bolt.Tx) error {
+//                err := tx.Bucket([]byte(transactionBucket)).Put(alpha.Hash, data)
+//                if err != nil {
+//                        return fmt.Errorf("Alpha Genesis did not insert into transactionBucket, code: %v", err)
+//                	}
+//                return nil
+//        })
+//
 	return alpha
 }
 

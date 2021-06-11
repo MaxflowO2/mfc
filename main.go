@@ -78,10 +78,10 @@ func main() {
 //	fmt.Printf("Asked from this: %s\n", addy.MFCxAddy)
 
 //	startDB()
-	AlphaGenesisBlock()
+//	AlphaGenesisBlock()
 	bc := NewBlockchain()
 	defer bc.db.Close()
 
-	cli := CLI{}
+	cli := CLI{bc}
 	cli.Run()
 }

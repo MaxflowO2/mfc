@@ -20,11 +20,11 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
-	"log"
+//	"log"
 	"encoding/json"
 	"io/ioutil"
 	"fmt"
-	"github.com/boltdb/bolt"
+//	"github.com/boltdb/bolt"
 )
 
 // MFCAddress {}
@@ -141,106 +141,106 @@ func DeserializeAddy(d []byte) *MFCAddress {
 // Method 1: MFCxAddy (string) as Key/Value as Serialize() in StringBucket
 // Method 2: MFCxHex ([]byte) as Key/Value as Serialize() in HexBucket
 // Logic, will print verbose in string, will hash with []byte
-func AddAddress(mfc MFCAddress) {
-	db, err := bolt.Open(dbFile, 0644, nil)
-		if err != nil {
-			log.Fatal(err)
-		}
-	defer db.Close()
+//func AddAddress(mfc MFCAddress) {
+//	db, err := bolt.Open(dbFile, 0644, nil)
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//	defer db.Close()
+//
+//	err = db.Update(func(tx *bolt.Tx) error {
+ //		bucket, err := tx.CreateBucketIfNotExists([]byte(addressBucket))
+//		if err != nil {
+//			return err
+//		}
+//
+//		err = bucket.Put([]byte(mfc.MFCxAddy), mfc.Serialize())
+//		if err != nil {
+//			return err
+//		}
+//		return nil
+//	})
+//
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	err = db.Update(func(tx *bolt.Tx) error {
+//		bucket, err := tx.CreateBucketIfNotExists([]byte(addressHexBucket))
+//		if err != nil {
+//			return err
+//		}
 
-	err = db.Update(func(tx *bolt.Tx) error {
- 		bucket, err := tx.CreateBucketIfNotExists([]byte(addressBucket))
-		if err != nil {
-			return err
-		}
+//		err = bucket.Put(mfc.MFCxHex, mfc.Serialize())
+//		if err != nil {
+//			return err
+//		}
+//		return nil
+//	})
 
-		err = bucket.Put([]byte(mfc.MFCxAddy), mfc.Serialize())
-		if err != nil {
-			return err
-		}
-		return nil
-	})
+//	if err != nil {
+//		log.Fatal(err)
+//	}
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-        err = db.Update(func(tx *bolt.Tx) error {
-                bucket, err := tx.CreateBucketIfNotExists([]byte(addressHexBucket))
-                if err != nil {
-                        return err
-                }
-
-                err = bucket.Put(mfc.MFCxHex, mfc.Serialize())
-                if err != nil {
-                        return err
-                }
-                return nil
-        })
-
-        if err != nil {
-                log.Fatal(err)
-        }
-
-}
+//}
 
 // RetrieveMFCAddress(s string)
 // Opens DB, finds address string s in StringBucket
 // Returns MFCAddress of user
-func RetreiveMFCAddress(s string) *MFCAddress {
-	db, err := bolt.Open(dbFile, 0644, nil)
-		if err != nil {
-			fmt.Errorf("Could not load %s, %v\n", dbFile, err)
-		}
-	defer db.Close()
-
-	var mfcaddy *MFCAddress
-	err = db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(addressBucket))
-		if bucket == nil {
-			return fmt.Errorf("Bucket %q not found!\n", addressBucket)
-		}
-
-		mfcaddy = DeserializeAddy(bucket.Get([]byte(s)))
-
-		return nil
-	})
-
-	if err != nil {
-		fmt.Errorf("Did not View(%s), code: %v\n", addressBucket, err)
-	}
-
-	return mfcaddy
-}
+//func RetreiveMFCAddress(s string) *MFCAddress {
+//	db, err := bolt.Open(dbFile, 0644, nil)
+//		if err != nil {
+//			fmt.Errorf("Could not load %s, %v\n", dbFile, err)
+//		}
+//	defer db.Close()
+//
+//	var mfcaddy *MFCAddress
+//	err = db.View(func(tx *bolt.Tx) error {
+//		bucket := tx.Bucket([]byte(addressBucket))
+//		if bucket == nil {
+//			return fmt.Errorf("Bucket %q not found!\n", addressBucket)
+//		}
+//
+//		mfcaddy = DeserializeAddy(bucket.Get([]byte(s)))
+//
+//		return nil
+//	})
+//
+//	if err != nil {
+//		fmt.Errorf("Did not View(%s), code: %v\n", addressBucket, err)
+//	}
+//
+//	return mfcaddy
+//}
 
 // RetrieveMFCAddressHex(b []byte)
 // Opens DB, finds address []byte b in HexBucket
 // Returns MFCAddress of user
-func RetreiveMFCAddressHex(b []byte) *MFCAddress {
-	db, err := bolt.Open(dbFile, 0644, nil)
-
-	if err != nil {
-		fmt.Errorf("Could not load %s, %v\n", dbFile, err)
-	}
-
-	defer db.Close()
-
-	var mfcaddy *MFCAddress
-
-	err = db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(addressHexBucket))
-		if bucket == nil {
-			return fmt.Errorf("Bucket %s not found!\n", addressHexBucket)
-		}
-
-        	mfcaddy = DeserializeAddy(bucket.Get(b))
-
-		return nil
-	})
-
-	if err != nil {
-		fmt.Errorf("Could not View(%s), %v\n", addressHexBucket, err)
-	}
-
-	return mfcaddy
-}
+//func RetreiveMFCAddressHex(b []byte) *MFCAddress {
+//	db, err := bolt.Open(dbFile, 0644, nil)
+//
+//	if err != nil {
+//		fmt.Errorf("Could not load %s, %v\n", dbFile, err)
+//	}
+//
+//	defer db.Close()
+//
+//	var mfcaddy *MFCAddress
+//
+//	err = db.View(func(tx *bolt.Tx) error {
+//		bucket := tx.Bucket([]byte(addressHexBucket))
+//		if bucket == nil {
+//			return fmt.Errorf("Bucket %s not found!\n", addressHexBucket)
+//		}
+//
+  //      	mfcaddy = DeserializeAddy(bucket.Get(b))
+//
+//		return nil
+//	})
+//
+//	if err != nil {
+//		fmt.Errorf("Could not View(%s), %v\n", addressHexBucket, err)
+//	}
+//
+//	return mfcaddy
+//}

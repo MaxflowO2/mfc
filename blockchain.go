@@ -1,4 +1,3 @@
-// (blockchain.go) - Contains Database & Blockchain commands im ./mfc
 // Copyright (C) 2021 MaxflowO2, the only author of Max Flow Chain
 //
 // This program is free software: you can redistribute it and/or modify
@@ -22,6 +21,9 @@ import (
 //	"time"
 	"github.com/boltdb/bolt"
 )
+
+const dbFile = "blockchain.db"
+const blocksBucket = "blocks"
 
 // Blockchain{} struct
 type Blockchain struct {
@@ -132,6 +134,7 @@ func (bc *Blockchain) AddBlock(trans []*Transaction) {
 // Returns BlockchainIterator{} struct
 // lastHash or newBlockHash is bc.tip
 func (bc *Blockchain) Iterator() *BlockchainIterator {
+	// throwing errors
 	bci := &BlockchainIterator{bc.tip, bc.db}
 
 	return bci
@@ -171,7 +174,7 @@ func NewBlockchain() *Blockchain {
 
 		if b == nil {
 			fmt.Println("No existing blockchain found. Creating a new one...")
-			genesis := NewGenesisBlock()
+			genesis := AlphaGenesisBlock()
 
 			b, err := tx.CreateBucket([]byte(blocksBucket))
 			if err != nil {
@@ -203,4 +206,5 @@ func NewBlockchain() *Blockchain {
 
 	return &bc
 }
+
 
