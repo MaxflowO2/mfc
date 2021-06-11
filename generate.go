@@ -25,5 +25,3 @@ func Repeat(d time.Duration, f func(time.Time)) {
 		f(x)
 	}
 }
-
-

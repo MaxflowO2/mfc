@@ -16,40 +16,40 @@
 
 package main
 
-import(
-	"fmt"
-        "bytes"
-        "time"
-        "math"
-        "math/big"
+import (
+	"bytes"
 	"crypto/ed25519"
-	"encoding/json"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
-//	"github.com/boltdb/bolt"
-        "golang.org/x/crypto/sha3"
+	"math"
+	"math/big"
+	"time"
+	//	"github.com/boltdb/bolt"
+	"golang.org/x/crypto/sha3"
 )
 
 // Transaction{} struct
 // Basic state change of blockchain/db
 // Used throughout as *Transaction
 type Transaction struct {
-        Timestamp       int64
+	Timestamp int64
 	// update Sender/Reciever to string v0.0.8
-	Sender		[]byte
-	Receiver	[]byte
-	Amount		uint64
-	Message		string
-	Signature	[]byte
-	Hash		[]byte
-	Nonce		int
+	Sender    []byte
+	Receiver  []byte
+	Amount    uint64
+	Message   string
+	Signature []byte
+	Hash      []byte
+	Nonce     int
 }
 
 // powTransaction {} struct
 // Used for powT functions below
-type powTransaction struct{
+type powTransaction struct {
 	transaction *Transaction
-	target *big.Int
+	target      *big.Int
 }
 
 // Set Variables for powT functions below
@@ -94,42 +94,42 @@ func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 // sha3.Sum256 Hash of Transaction data
 // Returns Nonce, Hash
 func (powT *powTransaction) RunTrans() (int, []byte) {
-        var hashInt big.Int
-        var hash [32]byte
-        tnonce := 0
+	var hashInt big.Int
+	var hash [32]byte
+	tnonce := 0
 
-        fmt.Println("Mining the Transaction")
-        for tnonce < maxTransNonce {
-                data := powT.prepareTransData(tnonce)
+	fmt.Println("Mining the Transaction")
+	for tnonce < maxTransNonce {
+		data := powT.prepareTransData(tnonce)
 
-                hash = sha3.Sum256(data)
-                fmt.Printf("\r%x", hash)
-                hashInt.SetBytes(hash[:])
+		hash = sha3.Sum256(data)
+		fmt.Printf("\r%x", hash)
+		hashInt.SetBytes(hash[:])
 
-                if hashInt.Cmp(powT.target) == -1 {
-                        break
-                } else {
-                        tnonce++
-                }
-        }
-        fmt.Print("\n")
+		if hashInt.Cmp(powT.target) == -1 {
+			break
+		} else {
+			tnonce++
+		}
+	}
+	fmt.Print("\n")
 
-        return tnonce, hash[:]
+	return tnonce, hash[:]
 }
 
 // powT.ValidateTrans()
 // part of powT *Transaction
 // Returns bool
 func (powT *powTransaction) ValidateTrans() bool {
-        var hashInt big.Int
+	var hashInt big.Int
 
-        data := powT.prepareTransData(powT.transaction.Nonce)
-        hash := sha3.Sum256(data)
-        hashInt.SetBytes(hash[:])
+	data := powT.prepareTransData(powT.transaction.Nonce)
+	hash := sha3.Sum256(data)
+	hashInt.SetBytes(hash[:])
 
-        isValid := hashInt.Cmp(powT.target) == -1
+	isValid := hashInt.Cmp(powT.target) == -1
 
-        return isValid
+	return isValid
 }
 
 // SliceTransaction(t *Transaction)
@@ -151,13 +151,13 @@ func bsTransaction() *Transaction {
 	receiver := HashKeys(b)
 	var amount uint64 = 0
 	message := bytes.Join(
-                [][]byte{
-                        sender,
-                        receiver,
-                        IntToHex(int64(amount)),
-                },
-                []byte{},
-        )
+		[][]byte{
+			sender,
+			receiver,
+			IntToHex(int64(amount)),
+		},
+		[]byte{},
+	)
 	signed := ed25519.Sign(a.PrivateKey, message)
 	var signature []byte
 	verify := ed25519.Verify(a.PublicKey, message, signed)
@@ -167,11 +167,11 @@ func bsTransaction() *Transaction {
 	bs := &Transaction{time.Now().Unix(), sender, receiver, amount, "", signature, []byte{}, 0}
 
 	fmt.Println("START OF TRANSACTION")
-        fmt.Printf("Timestamp: %x\n", bs.Timestamp)
-        fmt.Printf("Sender Address: %x\n", bs.Sender)
-        fmt.Printf("Receiver Address: %x\n", bs.Receiver)
-        fmt.Println("Amount: " , bs.Amount)
-        fmt.Printf("Signtaure:\n%x\n", bs.Signature)
+	fmt.Printf("Timestamp: %x\n", bs.Timestamp)
+	fmt.Printf("Sender Address: %x\n", bs.Sender)
+	fmt.Printf("Receiver Address: %x\n", bs.Receiver)
+	fmt.Println("Amount: ", bs.Amount)
+	fmt.Printf("Signtaure:\n%x\n", bs.Signature)
 
 	powT := NewPOWTrans(bs)
 	nonce, hash := powT.RunTrans()
@@ -189,34 +189,34 @@ func bsTransaction() *Transaction {
 func AlphaGenesis() *Transaction {
 	var alpha *Transaction
 	alpha = &Transaction{1623289682, []byte{}, []byte{}, 0, "AlphaNet of MaxFlowChain, created for testing purposes on 6/9/2021, www.nytimes.com/2021/06/09/technology/bitcoin-untraceable-pipeline-ransomware.html issues 101", []byte{}, []byte{}, 0}
-	alpha.Hash = []byte{0, 193, 197, 91, 204, 202, 150, 0, 152, 178, 150, 35, 108, 152, 68, 106, 19, 114, 152, 94, 9, 131, 80, 44, 246, 98, 103, 106, 207, 218, 75, 96,}
+	alpha.Hash = []byte{0, 193, 197, 91, 204, 202, 150, 0, 152, 178, 150, 35, 108, 152, 68, 106, 19, 114, 152, 94, 9, 131, 80, 44, 246, 98, 103, 106, 207, 218, 75, 96}
 	alpha.Nonce = 314
 
-        header := "alpha/trans/"
-        dotblock := ".trans"
-        filename := header + hex.EncodeToString(alpha.Hash) + dotblock
-        file, _ := json.MarshalIndent(alpha, "", " ")
-        _ = ioutil.WriteFile(filename, file, 0644)
+	header := "alpha/trans/"
+	dotblock := ".trans"
+	filename := header + hex.EncodeToString(alpha.Hash) + dotblock
+	file, _ := json.MarshalIndent(alpha, "", " ")
+	_ = ioutil.WriteFile(filename, file, 0644)
 
-//        data, err := json.Marshal(alpha)
-//        if err != nil {
-//                fmt.Errorf("Couldn't Marshal AlphaNet Genesis Transaction, %v", err)
-//        	}
-//
-//        db, err := setupDB()
-//        if err != nil {
-//                fmt.Errorf("Couldn't open mfc.db, %v", err)
-//        	}
-//        defer db.Close()
+	//        data, err := json.Marshal(alpha)
+	//        if err != nil {
+	//                fmt.Errorf("Couldn't Marshal AlphaNet Genesis Transaction, %v", err)
+	//        	}
+	//
+	//        db, err := setupDB()
+	//        if err != nil {
+	//                fmt.Errorf("Couldn't open mfc.db, %v", err)
+	//        	}
+	//        defer db.Close()
 
-//        err = db.Update(func (tx *bolt.Tx) error {
-//                err := tx.Bucket([]byte(transactionBucket)).Put(alpha.Hash, data)
-//                if err != nil {
-//                        return fmt.Errorf("Alpha Genesis did not insert into transactionBucket, code: %v", err)
-//                	}
-//                return nil
-//        })
-//
+	//        err = db.Update(func (tx *bolt.Tx) error {
+	//                err := tx.Bucket([]byte(transactionBucket)).Put(alpha.Hash, data)
+	//                if err != nil {
+	//                        return fmt.Errorf("Alpha Genesis did not insert into transactionBucket, code: %v", err)
+	//                	}
+	//                return nil
+	//        })
+	//
 	return alpha
 }
 
@@ -232,17 +232,18 @@ func (t *Transaction) Serialize() []byte {
 
 	return value
 }
+
 // DeserializeTrans(d []byte)
 // JSON to *Transacation for Bolt.DB
 // Returns *Transaction
 func DeserializeTrans(d []byte) *Transaction {
-        var trans Transaction
+	var trans Transaction
 
-        err := json.Unmarshal(d, &trans)
+	err := json.Unmarshal(d, &trans)
 
-        if err != nil {
-                fmt.Errorf("%v, couldn't Unmarshal\n", &trans)
-        }
+	if err != nil {
+		fmt.Errorf("%v, couldn't Unmarshal\n", &trans)
+	}
 
-        return &trans
+	return &trans
 }

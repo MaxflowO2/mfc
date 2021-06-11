@@ -20,27 +20,27 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
-//	"log"
+	//	"log"
 	"encoding/json"
-	"io/ioutil"
 	"fmt"
-//	"github.com/boltdb/bolt"
+	"io/ioutil"
+	//	"github.com/boltdb/bolt"
 )
 
 // MFCAddress {}
 // Struct will be used throughout code
 // Will save to DB under Address Basket
 type MFCAddress struct {
-	MFCxAddy 	string
-	MFCxHex		[]byte
-	PublicKey 	ed25519.PublicKey
+	MFCxAddy  string
+	MFCxHex   []byte
+	PublicKey ed25519.PublicKey
 }
 
 // HashKeys(MFCKeys)
 // Takes MFCKeys {} and returns []byte Hash
 func HashKeys(mfc MFCKeys) []byte {
 	pre := sha3.Sum256(mfc.PublicKey)
-        addy := pre[:]
+	addy := pre[:]
 	return addy
 }
 
@@ -75,26 +75,26 @@ func SaveAddress() {
 	newaddy.MFCxAddy = MakeMFCAddyString()
 	newaddy.MFCxHex = MakeMFCAddyHex()
 	newaddy.PublicKey = keys.PublicKey
-        file, _ := json.MarshalIndent(newaddy, "", " ")
-        _ = ioutil.WriteFile("MFCAddress.json", file, 0644)
+	file, _ := json.MarshalIndent(newaddy, "", " ")
+	_ = ioutil.WriteFile("MFCAddress.json", file, 0644)
 }
 
 // LoadAddress()
 // Opens MFCAddress.JSON and returns MFCAddress{}
 func LoadAddress() MFCAddress {
-        file, _ := ioutil.ReadFile("MFCAddress.json")
-        addy := MFCAddress{}
-        _ = json.Unmarshal([]byte(file), &addy)
-        return addy
+	file, _ := ioutil.ReadFile("MFCAddress.json")
+	addy := MFCAddress{}
+	_ = json.Unmarshal([]byte(file), &addy)
+	return addy
 }
 
 // LoadAddressString()
 // Opens MFCAddress.JSON and returns String Address
 func LoadAddressString() string {
-        file, _ := ioutil.ReadFile("MFCAddress.json")
-        addy := MFCAddress{}
-        _ = json.Unmarshal([]byte(file), &addy)
-        return addy.MFCxAddy
+	file, _ := ioutil.ReadFile("MFCAddress.json")
+	addy := MFCAddress{}
+	_ = json.Unmarshal([]byte(file), &addy)
+	return addy.MFCxAddy
 }
 
 // LoadAddressHex()
@@ -112,13 +112,13 @@ func LoadAddressHex() []byte {
 // *MFCAddress to JSON for Bolt.DB
 // Returns []byte
 func (a *MFCAddress) Serialize() []byte {
-        value, err := json.Marshal(a)
+	value, err := json.Marshal(a)
 
 	if err != nil {
 		fmt.Errorf("Cannot JSON Marshal %v\n", a)
 	}
 
-        return value
+	return value
 }
 
 // DeserializeAddy(d []byte)
@@ -133,7 +133,7 @@ func DeserializeAddy(d []byte) *MFCAddress {
 		fmt.Errorf("Couldn't Unmarshal %v\n", &addy)
 	}
 
-        return &addy
+	return &addy
 }
 
 // AddAddress(mfc MFCAddress)
@@ -149,7 +149,7 @@ func DeserializeAddy(d []byte) *MFCAddress {
 //	defer db.Close()
 //
 //	err = db.Update(func(tx *bolt.Tx) error {
- //		bucket, err := tx.CreateBucketIfNotExists([]byte(addressBucket))
+//		bucket, err := tx.CreateBucketIfNotExists([]byte(addressBucket))
 //		if err != nil {
 //			return err
 //		}
@@ -233,7 +233,7 @@ func DeserializeAddy(d []byte) *MFCAddress {
 //			return fmt.Errorf("Bucket %s not found!\n", addressHexBucket)
 //		}
 //
-  //      	mfcaddy = DeserializeAddy(bucket.Get(b))
+//      	mfcaddy = DeserializeAddy(bucket.Get(b))
 //
 //		return nil
 //	})

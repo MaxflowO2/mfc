@@ -23,8 +23,8 @@ import (
 )
 
 // MFCKeys{} - Our Key struct that will be used throughout code
-type MFCKeys struct{
-	PublicKey ed25519.PublicKey
+type MFCKeys struct {
+	PublicKey  ed25519.PublicKey
 	PrivateKey ed25519.PrivateKey
 }
 
@@ -37,7 +37,7 @@ func KeyGen() MFCKeys {
 
 	// keys added to MFCKeys{} struct
 	keys := MFCKeys{
-		PublicKey: pub,
+		PublicKey:  pub,
 		PrivateKey: priv,
 	}
 
@@ -65,7 +65,7 @@ func LoadKeys() MFCKeys {
 // Returns []byte signature
 func Sign(message []byte) []byte {
 	keys := LoadKeys()
-	sig:= ed25519.Sign(keys.PrivateKey, message)
+	sig := ed25519.Sign(keys.PrivateKey, message)
 	return sig
 }
 

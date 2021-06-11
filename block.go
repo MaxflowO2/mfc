@@ -17,26 +17,26 @@
 package main
 
 import (
-	"encoding/json"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"time"
-	"fmt"
-//	"github.com/boltdb/bolt"
+	//	"github.com/boltdb/bolt"
 )
 
 // Block{} struct
 // Used throughout code
 type Block struct {
-	Timestamp	int64
-	Transactions	[]*Transaction
-	PrevBlockHash	[]byte
-	Hash		[]byte
-	Nonce		int
-	Height		int
-	Difficulty	int
-	HashBy		[]byte
-	Signed		[]byte
+	Timestamp     int64
+	Transactions  []*Transaction
+	PrevBlockHash []byte
+	Hash          []byte
+	Nonce         int
+	Height        int
+	Difficulty    int
+	HashBy        []byte
+	Signed        []byte
 }
 
 // b.Serialize()
@@ -62,23 +62,23 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 	nonce, hash, diff := pow.Run()
 
 	prevHeight++
-	block.Height =prevHeight
+	block.Height = prevHeight
 	block.Hash = hash[:]
 	block.Nonce = nonce
 	block.Difficulty = diff
 	block.Signed = Sign(block.Hash)
 
-        header := "alpha/block/"
-        dotblock := ".block"
-        filename := header + hex.EncodeToString(block.Hash) + dotblock
-        file, err := json.MarshalIndent(block, "", " ")
-        if err != nil {
-                fmt.Errorf("No Marshal\n")
-        }
-        err = ioutil.WriteFile(filename, file, 0644)
-        if err != nil{
-                fmt.Errorf("No file\n")
-        }
+	header := "alpha/block/"
+	dotblock := ".block"
+	filename := header + hex.EncodeToString(block.Hash) + dotblock
+	file, err := json.MarshalIndent(block, "", " ")
+	if err != nil {
+		fmt.Errorf("No Marshal\n")
+	}
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		fmt.Errorf("No file\n")
+	}
 
 	return block
 }
@@ -111,7 +111,7 @@ func AlphaGenesisBlock() *Block {
 		fmt.Errorf("No Marshal\n")
 	}
 	err = ioutil.WriteFile(filename, file, 0644)
-	if err != nil{
+	if err != nil {
 		fmt.Errorf("No file\n")
 	}
 
@@ -139,7 +139,7 @@ func AlphaGenesisBlock() *Block {
 //		if err != nil {
 //			return fmt.Errorf("Alpha Genesis did not insert into mfc.db blocksBucket, code: %v\n", err)
 //			}
-		
+
 //		err = tx.Bucket([]byte(blocksBucket)).Put([]byte("1"), alpha.Hash)
 //		if err != nil {
 //			return fmt.Errorf("Pointer Key not inserted at byte '1', code: %v\n", err)
@@ -172,4 +172,3 @@ func DeserializeBlock(d []byte) *Block {
 
 	return &block
 }
-

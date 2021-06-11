@@ -56,12 +56,12 @@ func NewProofOfWork(b *Block) *ProofOfWork {
 // Gets the bytes of all hashes, in []*Transaction
 // Returns Sha3.Sum256 of []*Transaction
 func (pow *ProofOfWork) sliceHash() []byte {
-        max := len(pow.block.Transactions)
-        var temp *Transaction
-        var toHash []byte
-        for i := 0 ; i < max ; i++ {
-                temp = pow.block.Transactions[i]
-                toHash = bytes.Join(
+	max := len(pow.block.Transactions)
+	var temp *Transaction
+	var toHash []byte
+	for i := 0; i < max; i++ {
+		temp = pow.block.Transactions[i]
+		toHash = bytes.Join(
 			[][]byte{
 				toHash,
 				temp.Hash,
@@ -71,10 +71,10 @@ func (pow *ProofOfWork) sliceHash() []byte {
 		// add a "toblock bool" - add to struct
 		// add a "database addition" - Main database
 		// add a "database withdrawl" - Mempool
-        }
-        resultpre := (sha3.Sum256(toHash))
+	}
+	resultpre := (sha3.Sum256(toHash))
 	result := resultpre[:]
-        return result
+	return result
 }
 
 // pow.prepareData(nonce int)
@@ -103,12 +103,12 @@ func (pow *ProofOfWork) Run() (int, []byte, int) {
 	var hashInt big.Int
 	var hash [32]byte
 	nonce := 0
-	
+
 	fmt.Printf("Mining the block containing:\n \"%v\"\n", pow.block.Transactions)
 	for nonce < maxNonce {
 		data := pow.prepareData(nonce)
 
-		hash =sha3.Sum256(data)
+		hash = sha3.Sum256(data)
 		fmt.Printf("\r%x", hash)
 		hashInt.SetBytes(hash[:])
 
@@ -136,4 +136,3 @@ func (pow *ProofOfWork) Validate() bool {
 
 	return isValid
 }
-

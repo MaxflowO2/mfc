@@ -23,7 +23,7 @@ import (
 	"os"
 	"strconv"
 	"time"
-//	"encoding/hex"
+	//	"encoding/hex"
 )
 
 // CLI responsible for processing command line arguments
@@ -34,7 +34,7 @@ type CLI struct {
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  visatest - with multiple 'bs-transactions'")
-//	fmt.Println("  addtodb - sends your Address to BoltDB")
+	//	fmt.Println("  addtodb - sends your Address to BoltDB")
 	fmt.Println("  autogen - creates a massive block every 60 seconds with nulltrans")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
@@ -48,14 +48,14 @@ func (cli *CLI) validateArgs() {
 }
 
 func (cli *CLI) addBlock() {
-        var sendit []*Transaction
-        // Visa's 1,734 per second * 15 seconds
-        for i := 0; i < 26010; i++ {
-                fill := bsTransaction()
-                sendit = append(sendit, fill)
-        }
-        cli.bc.AddBlock(sendit)
-        fmt.Println("Success!")
+	var sendit []*Transaction
+	// Visa's 1,734 per second * 15 seconds
+	for i := 0; i < 26010; i++ {
+		fill := bsTransaction()
+		sendit = append(sendit, fill)
+	}
+	cli.bc.AddBlock(sendit)
+	fmt.Println("Success!")
 }
 
 func (cli *CLI) autoGen(t time.Time) {
@@ -80,7 +80,7 @@ func (cli *CLI) bsTrans() {
 func (cli *CLI) printChain() {
 	// throwing errors
 	bci := cli.bc.Iterator()
-//	var addy *MFCAddress
+	//	var addy *MFCAddress
 	for {
 		block := bci.Next()
 		fmt.Printf("Block Height: %v\n", block.Height)
@@ -91,7 +91,7 @@ func (cli *CLI) printChain() {
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
 		fmt.Printf("Difficulty: %v\n", block.Difficulty)
 		//hangs
-//		addy = RetreiveMFCAddressHex(block.HashBy)
+		//		addy = RetreiveMFCAddressHex(block.HashBy)
 		fmt.Printf("Hashed By: %x\n", block.HashBy)
 		fmt.Printf("Signature: %x\n", block.Signed)
 		fmt.Println()
@@ -108,10 +108,10 @@ func (cli *CLI) Run() {
 
 	addBlockCmd := flag.NewFlagSet("visatest", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-//	addToDB := flag.NewFlagSet("addtodb", flag.ExitOnError)
+	//	addToDB := flag.NewFlagSet("addtodb", flag.ExitOnError)
 	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
 	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
-//	addBlockData := addBlockCmd.String("data", "", "Block data")
+	//	addBlockData := addBlockCmd.String("data", "", "Block data")
 
 	switch os.Args[1] {
 	case "visatest":
@@ -125,17 +125,17 @@ func (cli *CLI) Run() {
 			log.Panic(err)
 		}
 
-//	case "addtodb":
-//		err := addToDB.Parse(os.Args[2:])
-//		if err != nil {
-//			log.Panic(err)
-//		}
+		//	case "addtodb":
+		//		err := addToDB.Parse(os.Args[2:])
+		//		if err != nil {
+		//			log.Panic(err)
+		//		}
 
-        case "bstrans":
-                err := bsTrans.Parse(os.Args[2:])
-                if err != nil {
-                        log.Panic(err)
-                }
+	case "bstrans":
+		err := bsTrans.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
 
 	case "printchain":
 		err := printChainCmd.Parse(os.Args[2:])
@@ -152,16 +152,16 @@ func (cli *CLI) Run() {
 	}
 
 	if autoGen.Parsed() {
-	        Repeat(1*time.Second, cli.autoGen)
+		Repeat(1*time.Second, cli.autoGen)
 	}
 
-//	if addToDB.Parsed() {
-//		cli.addToDB()
-//	}
+	//	if addToDB.Parsed() {
+	//		cli.addToDB()
+	//	}
 
-        if bsTrans.Parsed() {
-        	cli.bsTrans()
-        }
+	if bsTrans.Parsed() {
+		cli.bsTrans()
+	}
 
 	if printChainCmd.Parsed() {
 		// throwing errors
@@ -169,4 +169,3 @@ func (cli *CLI) Run() {
 	}
 
 }
-
