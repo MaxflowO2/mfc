@@ -80,11 +80,11 @@ func (pow *ProofOfWork) sliceHash() []byte {
 // pow.prepareData(nonce int)
 // Joins block data into []byte
 // Returns []byte
-func (pow *ProofOfWork) prepareData(nonce int) []byte {
+func (pow *ProofOfWork) prepareData(nonce int, mroot []byte) []byte {
 	data := bytes.Join(
 		[][]byte{
 			pow.block.PrevBlockHash,
-			pow.sliceHash(),
+			mroot,
 			IntToHex(pow.block.Timestamp),
 			IntToHex(int64(targetBits)),
 			IntToHex(int64(nonce)),
@@ -103,10 +103,11 @@ func (pow *ProofOfWork) Run() (int, []byte, int) {
 	var hashInt big.Int
 	var hash [32]byte
 	nonce := 0
-
+	mroot := pow.sliceHash()
 	fmt.Printf("Mining the block containing:\n \"%v\"\n", pow.block.Transactions)
 	for nonce < maxNonce {
-		data := pow.prepareData(nonce)
+
+		data := pow.prepareData(nonce, mroot)
 
 		hash = sha3.Sum256(data)
 		fmt.Printf("\r%x", hash)
@@ -128,7 +129,7 @@ func (pow *ProofOfWork) Run() (int, []byte, int) {
 func (pow *ProofOfWork) Validate() bool {
 	var hashInt big.Int
 
-	data := pow.prepareData(pow.block.Nonce)
+	data := pow.prepareData(pow.block.Nonce, pow.sliceHash())
 	hash := sha3.Sum256(data)
 	hashInt.SetBytes(hash[:])
 

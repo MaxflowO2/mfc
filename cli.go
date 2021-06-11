@@ -33,7 +33,7 @@ type CLI struct {
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  visatest - with multiple 'bs-transactions'")
+	fmt.Println("  visatest - 15 seconds worth of Visa Transactions")
 	//	fmt.Println("  addtodb - sends your Address to BoltDB")
 	fmt.Println("  autogen - creates a massive block every 60 seconds with nulltrans")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")

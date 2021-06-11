@@ -166,12 +166,12 @@ func bsTransaction() *Transaction {
 	}
 	bs := &Transaction{time.Now().Unix(), sender, receiver, amount, "", signature, []byte{}, 0}
 
-	fmt.Println("START OF TRANSACTION")
-	fmt.Printf("Timestamp: %x\n", bs.Timestamp)
-	fmt.Printf("Sender Address: %x\n", bs.Sender)
-	fmt.Printf("Receiver Address: %x\n", bs.Receiver)
-	fmt.Println("Amount: ", bs.Amount)
-	fmt.Printf("Signtaure:\n%x\n", bs.Signature)
+//	fmt.Println("START OF TRANSACTION")
+//	fmt.Printf("Timestamp: %x\n", bs.Timestamp)
+//	fmt.Printf("Sender Address: %x\n", bs.Sender)
+//	fmt.Printf("Receiver Address: %x\n", bs.Receiver)
+//	fmt.Println("Amount: ", bs.Amount)
+//	fmt.Printf("Signtaure:\n%x\n", bs.Signature)
 
 	powT := NewPOWTrans(bs)
 	nonce, hash := powT.RunTrans()
@@ -179,8 +179,8 @@ func bsTransaction() *Transaction {
 	bs.Hash = hash[:]
 	bs.Nonce = nonce
 
-	fmt.Println("Nonce: ", bs.Nonce)
-	fmt.Println("END OF TRANSACTION")
+//	fmt.Println("Nonce: ", bs.Nonce)
+//	fmt.Println("END OF TRANSACTION")
 
 	return bs
 }
