@@ -17,11 +17,15 @@
 package main
 
 import (
+	"fmt"
+	"math"
+	"math/big"
+	"time"
+	"bytes"
+	"io/ioutil"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"time"
+	"golang.org/x/crypto/sha3"
 //	"github.com/boltdb/bolt"
 )
 
@@ -44,7 +48,7 @@ type Block struct {
 // Preforms PoW
 // Returns *Block{}
 func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block {
-	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, LoadAddressHex(), []byte{}}
+	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, []byte(LoadAddress()), []byte{}}
 	pow := NewProofOfWork(block)
 	nonce, hash, diff := pow.Run()
 
@@ -126,6 +130,121 @@ func AlphaGenesisBlock() *Block {
 
 //	return alpha
 //}
+
+// PoW functions
+
+const targetBits = 16
+
+// Variable set throughout pow.go
+var (
+	maxNonce = math.MaxInt64
+)
+
+// ProofOfWork {} struct
+// Used for pow functions below
+type ProofOfWork struct {
+	block  *Block
+	target *big.Int
+}
+
+// NewProofOfWork(b *Block)
+// Uses targetBits to set difficulty
+// Returns *ProofOfWork{}
+func NewProofOfWork(b *Block) *ProofOfWork {
+	target := big.NewInt(1)
+	target.Lsh(target, uint(256-targetBits))
+
+	pow := &ProofOfWork{b, target}
+
+	return pow
+}
+
+// This is a bullshit version of MerkleRoot.
+// sliceHash([]*Trans)
+// Gets the bytes of all hashes, in []*Transaction
+// Returns Sha3.Sum256 of []*Transaction
+func (pow *ProofOfWork) sliceHash() []byte {
+	max := len(pow.block.Transactions)
+	var temp *Transaction
+	var toHash []byte
+	for i := 0; i < max; i++ {
+		temp = pow.block.Transactions[i]
+		toHash = bytes.Join(
+			[][]byte{
+				toHash,
+				temp.Hash,
+			},
+			[]byte{},
+		)
+		// add a "toblock bool" - add to struct
+		// add a "database addition" - Main database
+		// add a "database withdrawl" - Mempool
+	}
+	resultpre := sha3.Sum256(toHash)
+	result := resultpre[:]
+	return result
+}
+
+// pow.prepareData(nonce int)
+// Joins block data into []byte
+// Returns []byte
+func (pow *ProofOfWork) prepareData(nonce int, mroot []byte) []byte {
+	data := bytes.Join(
+		[][]byte{
+			pow.block.PrevBlockHash,
+			mroot,
+			IntToHex(pow.block.Timestamp),
+			IntToHex(int64(targetBits)),
+			IntToHex(int64(nonce)),
+			pow.block.HashBy,
+		},
+		[]byte{},
+	)
+
+	return data
+}
+
+// pow.Run()
+// Preforms Sha3.Sum256 hash of block data
+// Returns Nonce, Hash
+func (pow *ProofOfWork) Run() (int, []byte, int) {
+	var hashInt big.Int
+	var hash [32]byte
+	nonce := 0
+	mroot := pow.sliceHash()
+	fmt.Printf("Mining the block containing:\n \"%v\"\n", pow.block.Transactions)
+	for nonce < maxNonce {
+
+		data := pow.prepareData(nonce, mroot)
+
+		hash = sha3.Sum256(data)
+		fmt.Printf("\r%x", hash)
+		hashInt.SetBytes(hash[:])
+
+		if hashInt.Cmp(pow.target) == -1 {
+			break
+		} else {
+			nonce++
+		}
+	}
+	fmt.Print("\n")
+	return nonce, hash[:], targetBits
+}
+
+// pow.Validate()
+// Validates Hash
+// Returns bool
+func (pow *ProofOfWork) Validate() bool {
+	var hashInt big.Int
+
+	data := pow.prepareData(pow.block.Nonce, pow.sliceHash())
+	hash := sha3.Sum256(data)
+	hashInt.SetBytes(hash[:])
+
+	isValid := hashInt.Cmp(pow.target) == -1
+
+	return isValid
+}
 
 // Bolt.DB functions
 

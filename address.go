@@ -17,13 +17,13 @@
 package main
 
 import (
-	"crypto/ed25519"
-	"encoding/hex"
-	"golang.org/x/crypto/sha3"
-//	"log"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"encoding/hex"
+	"encoding/json"
+	"crypto/ed25519"
+	"golang.org/x/crypto/sha3"
+//	"log"
 //	"github.com/boltdb/bolt"
 )
 
@@ -48,7 +48,7 @@ func HashKeys(mfc MFCKeys) []byte {
 
 // MakeAddress()
 // Makes MFCAddress{}, and calls .ToFile() for saving
-func MakeAddress() {
+func MakeAddress() *MFCAddress {
 	var value MFCAddress
 	mfcx := "MFCx"
 	keys := LoadKeys()
@@ -58,6 +58,7 @@ func MakeAddress() {
 	value.MFCxAddy = mfcx + addyString
 	value.PublicKey = keys.PublicKey
 	value.ToFile()
+	return &value
 }
 
 // a.ToFile()

@@ -23,7 +23,7 @@ import (
 	"os"
 	"strconv"
 	"time"
-	//	"encoding/hex"
+//	"encoding/hex"
 )
 
 // CLI responsible for processing command line arguments
@@ -34,7 +34,7 @@ type CLI struct {
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  visatest - 15 seconds worth of Visa Transactions")
-	//	fmt.Println("  addtodb - sends your Address to BoltDB")
+//	fmt.Println("  addtodb - sends your Address to BoltDB")
 	fmt.Println("  autogen - creates a massive block every 60 seconds with nulltrans")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
@@ -85,7 +85,7 @@ func (cli *CLI) printChain() {
 		block := bci.Next()
 		fmt.Printf("Block Height: %v\n", block.Height)
 		fmt.Printf("Previous Hash:\n%x\n", block.PrevBlockHash)
-		fmt.Printf("Transactions in Block:\n%v\n", block.Transactions)
+//		fmt.Printf("Transactions in Block:\n%v\n", block.Transactions)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := NewProofOfWork(block)
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
@@ -152,7 +152,7 @@ func (cli *CLI) Run() {
 	}
 
 	if autoGen.Parsed() {
-		Repeat(1*time.Second, cli.autoGen)
+		Repeat(15*time.Second, cli.autoGen)
 	}
 
 	//	if addToDB.Parsed() {
