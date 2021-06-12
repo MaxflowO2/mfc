@@ -20,104 +20,93 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
-	//	"log"
+//	"log"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	//	"github.com/boltdb/bolt"
+//	"github.com/boltdb/bolt"
 )
 
-// MFCAddress {}
+// MFCAddress struct {}
 // Struct will be used throughout code
 // Will save to DB under Address Basket
 type MFCAddress struct {
 	MFCxAddy  string
-	MFCxHex   []byte
 	PublicKey ed25519.PublicKey
+	// Adding nested struct []*Balance for DB values
+	//State []*Balance
 }
 
 // HashKeys(MFCKeys)
-// Takes MFCKeys {} and returns []byte Hash
+// Takes MFCKeys {}
+// Returns []byte Hash
 func HashKeys(mfc MFCKeys) []byte {
 	pre := sha3.Sum256(mfc.PublicKey)
 	addy := pre[:]
 	return addy
 }
 
-// MakeMFCAddyString()
-// Returns MFCx String for address
-func MakeMFCAddyString() string {
+// MakeAddress()
+// Makes MFCAddress{}, and calls .ToFile() for saving
+func MakeAddress() {
+	var value MFCAddress
 	mfcx := "MFCx"
 	keys := LoadKeys()
 	addypre := HashKeys(keys)
 	addy := addypre[12:]
 	addyString := hex.EncodeToString(addy)
-	mfcxaddy := mfcx + addyString
-	return mfcxaddy
+	value.MFCxAddy = mfcx + addyString
+	value.PublicKey = keys.PublicKey
+	value.ToFile()
 }
 
-// MakeMFCAddyByte()
-// Returns MFCx []Byte for address
-func MakeMFCAddyHex() []byte {
-	mfcx := "MFCx"
-	keys := LoadKeys()
-	addypre := HashKeys(keys)
-	addy := addypre[12:]
-	mfcxhex := append([]byte(mfcx), addy[:]...)
-	return mfcxhex
+// a.ToFile()
+// Saves MFCAddress to MFCAddress.JSON
+func (a *MFCAddress) ToFile() {
+	file, err := json.MarshalIndent(a, "", " ")
+	if err != nil {
+		fmt.Errorf("Could not Marshal Indent %v!\n", a)
+	}
+	err = ioutil.WriteFile("MFCAddress.json", file, 0644)
+	if err != nil {
+		fmt.Errorf("Could not save MFCAddress.json\n")
+	}
 }
 
-// SaveAddress()
-// Opens MFCKeys.JSON and makes MFCAddress{}
-func SaveAddress() {
-	keys := LoadKeys()
-	newaddy := MFCAddress{}
-	newaddy.MFCxAddy = MakeMFCAddyString()
-	newaddy.MFCxHex = MakeMFCAddyHex()
-	newaddy.PublicKey = keys.PublicKey
-	file, _ := json.MarshalIndent(newaddy, "", " ")
-	_ = ioutil.WriteFile("MFCAddress.json", file, 0644)
-}
-
-// LoadAddress()
+// AddyFromFile()
 // Opens MFCAddress.JSON and returns MFCAddress{}
-func LoadAddress() MFCAddress {
-	file, _ := ioutil.ReadFile("MFCAddress.json")
-	addy := MFCAddress{}
-	_ = json.Unmarshal([]byte(file), &addy)
+func AddyFromFile() MFCAddress {
+	var addy MFCAddress
+	file, err := ioutil.ReadFile("MFCAddress.json")
+	if err != nil {
+		fmt.Errorf("Could not load MFCAddress.json\n")
+	}
+	err = json.Unmarshal([]byte(file), &addy)
+	if err != nil {
+		fmt.Errorf("Could not Unmarshal MFCAddress.json\n")
+	}
 	return addy
 }
 
-// LoadAddressString()
+// LoadAddress()
 // Opens MFCAddress.JSON and returns String Address
-func LoadAddressString() string {
+func LoadAddress() string {
 	file, _ := ioutil.ReadFile("MFCAddress.json")
 	addy := MFCAddress{}
 	_ = json.Unmarshal([]byte(file), &addy)
 	return addy.MFCxAddy
 }
 
-// LoadAddressHex()
-// Opens MFCAddress.JSON and returns Hex Address
-func LoadAddressHex() []byte {
-	file, _ := ioutil.ReadFile("MFCAddress.json")
-	addy := MFCAddress{}
-	_ = json.Unmarshal([]byte(file), &addy)
-	return addy.MFCxHex
-}
-
-// Database functions below
+// Bolt.DB functions below
 
 // a.Serialize()
 // *MFCAddress to JSON for Bolt.DB
 // Returns []byte
 func (a *MFCAddress) Serialize() []byte {
 	value, err := json.Marshal(a)
-
 	if err != nil {
 		fmt.Errorf("Cannot JSON Marshal %v\n", a)
 	}
-
 	return value
 }
 
@@ -126,25 +115,21 @@ func (a *MFCAddress) Serialize() []byte {
 // Returns MFCAddress
 func DeserializeAddy(d []byte) *MFCAddress {
 	var addy MFCAddress
-
 	err := json.Unmarshal(d, &addy)
-
 	if err != nil {
 		fmt.Errorf("Couldn't Unmarshal %v\n", &addy)
 	}
-
 	return &addy
 }
 
 // AddAddress(mfc MFCAddress)
 // Adds MFCAddress to Bolt.DB
 // Method 1: MFCxAddy (string) as Key/Value as Serialize() in StringBucket
-// Method 2: MFCxHex ([]byte) as Key/Value as Serialize() in HexBucket
 // Logic, will print verbose in string, will hash with []byte
 //func AddAddress(mfc MFCAddress) {
 //	db, err := bolt.Open(dbFile, 0644, nil)
 //		if err != nil {
-//			log.Fatal(err)
+//			fmt.Errorf("Could not load database file, %v\n", err)
 //		}
 //	defer db.Close()
 //
@@ -162,26 +147,8 @@ func DeserializeAddy(d []byte) *MFCAddress {
 //	})
 //
 //	if err != nil {
-//		log.Fatal(err)
-//	}
+//		fmt.Errorf("Bucket error: %v\n", err)
 //
-//	err = db.Update(func(tx *bolt.Tx) error {
-//		bucket, err := tx.CreateBucketIfNotExists([]byte(addressHexBucket))
-//		if err != nil {
-//			return err
-//		}
-
-//		err = bucket.Put(mfc.MFCxHex, mfc.Serialize())
-//		if err != nil {
-//			return err
-//		}
-//		return nil
-//	})
-
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-
 //}
 
 // RetrieveMFCAddress(s string)
@@ -208,38 +175,6 @@ func DeserializeAddy(d []byte) *MFCAddress {
 //
 //	if err != nil {
 //		fmt.Errorf("Did not View(%s), code: %v\n", addressBucket, err)
-//	}
-//
-//	return mfcaddy
-//}
-
-// RetrieveMFCAddressHex(b []byte)
-// Opens DB, finds address []byte b in HexBucket
-// Returns MFCAddress of user
-//func RetreiveMFCAddressHex(b []byte) *MFCAddress {
-//	db, err := bolt.Open(dbFile, 0644, nil)
-//
-//	if err != nil {
-//		fmt.Errorf("Could not load %s, %v\n", dbFile, err)
-//	}
-//
-//	defer db.Close()
-//
-//	var mfcaddy *MFCAddress
-//
-//	err = db.View(func(tx *bolt.Tx) error {
-//		bucket := tx.Bucket([]byte(addressHexBucket))
-//		if bucket == nil {
-//			return fmt.Errorf("Bucket %s not found!\n", addressHexBucket)
-//		}
-//
-//      	mfcaddy = DeserializeAddy(bucket.Get(b))
-//
-//		return nil
-//	})
-//
-//	if err != nil {
-//		fmt.Errorf("Could not View(%s), %v\n", addressHexBucket, err)
 //	}
 //
 //	return mfcaddy

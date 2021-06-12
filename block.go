@@ -22,10 +22,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"time"
-	//	"github.com/boltdb/bolt"
+//	"github.com/boltdb/bolt"
 )
 
-// Block{} struct
+// Block struct {}
 // Used throughout code
 type Block struct {
 	Timestamp     int64
@@ -37,19 +37,6 @@ type Block struct {
 	Difficulty    int
 	HashBy        []byte
 	Signed        []byte
-}
-
-// b.Serialize()
-// Serialized block for Bolt.DB
-// Returns []byte
-func (b *Block) Serialize() []byte {
-	value, err := json.Marshal(b)
-
-	if err != nil {
-		fmt.Errorf("%v did not Marshal\n", b)
-	}
-
-	return value
 }
 
 // NewBlock(trans *Transaction, prevBlockHash []Byte)
@@ -68,17 +55,7 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 	block.Difficulty = diff
 	block.Signed = Sign(block.Hash)
 
-	header := "alpha/block/"
-	dotblock := ".block"
-	filename := header + hex.EncodeToString(block.Hash) + dotblock
-	file, err := json.MarshalIndent(block, "", " ")
-	if err != nil {
-		fmt.Errorf("No Marshal\n")
-	}
-	err = ioutil.WriteFile(filename, file, 0644)
-	if err != nil {
-		fmt.Errorf("No file\n")
-	}
+	block.ToFile()
 
 	return block
 }
@@ -98,22 +75,14 @@ func AlphaGenesisBlock() *Block {
 	theOne := AlphaGenesis()
 	alphaTrans = append(alphaTrans, theOne)
 	alpha := &Block{1623289682, alphaTrans, []byte{}, []byte{}, 0, 1, 0, []byte{}, []byte{}}
-	// been hashed, values below are correct
+	// PoW functions not needed
+	// Hash is correct, hashed by MaxflowO2
 	alpha.Hash = []byte{0, 0, 91, 237, 75, 239, 186, 156, 203, 254, 5, 66, 134, 202, 179, 200, 24, 123, 177, 62, 127, 223, 166, 39, 79, 139, 178, 237, 146, 253, 100, 214}
+	// Nonce is correct, nonced by MaxflowO2
 	alpha.Nonce = 55995
 	alpha.Difficulty = 16
 
-	header := "alpha/block/"
-	dotblock := ".block"
-	filename := header + hex.EncodeToString(alpha.Hash) + dotblock
-	file, err := json.MarshalIndent(alpha, "", " ")
-	if err != nil {
-		fmt.Errorf("No Marshal\n")
-	}
-	err = ioutil.WriteFile(filename, file, 0644)
-	if err != nil {
-		fmt.Errorf("No file\n")
-	}
+	alpha.ToFile()
 
 	return alpha
 }
@@ -158,17 +127,43 @@ func AlphaGenesisBlock() *Block {
 //	return alpha
 //}
 
+// Bolt.DB functions
+
+// b.ToFile()
+// Saves block to alpha/block as (Hash).block
+func (b *Block) ToFile() {
+        header := "alpha/block/"
+        dotblock := ".block"
+        filename := header + hex.EncodeToString(b.Hash) + dotblock
+        file, err := json.MarshalIndent(b, "", " ")
+        if err != nil {
+                fmt.Errorf("%s did not Marshal\n", filename)
+        }
+        err = ioutil.WriteFile(filename, file, 0644)
+        if err != nil {
+                fmt.Errorf("%s did not save\n", filename)
+        }
+}
+
+// b.Serialize()
+// Serialized block for Bolt.DB
+// Returns []byte
+func (b *Block) Serialize() []byte {
+        value, err := json.Marshal(b)
+        if err != nil {
+                fmt.Errorf("%v did not Marshal\n", b)
+        }
+        return value
+}
+
 // DeserializeBlock(d []byte)
 // Deserialize a block
 // Returns *Block
 func DeserializeBlock(d []byte) *Block {
 	var block Block
-
 	err := json.Unmarshal(d, &block)
-
 	if err != nil {
-		fmt.Errorf("%v, couldn't Unmarshal\n", &block)
+		fmt.Errorf("Could not Unmarshal\n")
 	}
-
 	return &block
 }
