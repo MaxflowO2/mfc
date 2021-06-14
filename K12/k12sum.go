@@ -1,4 +1,4 @@
-// (mfchash.go) - Contains the K12 Hash functions of ./mfc
+// (k12sum.go) - Contains the K12 Hash functions of ./mfc
 // Copyright (C) 2021 MaxflowO2, the only author of Max Flow Chain
 //
 // This program is free software: you can redistribute it and/or modify
