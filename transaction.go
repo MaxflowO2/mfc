@@ -26,7 +26,7 @@ import (
 	"math"
 	"math/big"
 	"time"
-	//	"github.com/boltdb/bolt"
+//	"github.com/boltdb/bolt"
 	"github.com/MaxflowO2/mfc/K12"
 )
 
@@ -189,8 +189,14 @@ func bsTransaction() *Transaction {
 func AlphaGenesis() *Transaction {
 	var alpha *Transaction
 	alpha = &Transaction{1623289682, []byte{}, []byte{}, 0, "AlphaNet of MaxFlowChain, created for testing purposes on 6/9/2021, www.nytimes.com/2021/06/09/technology/bitcoin-untraceable-pipeline-ransomware.html issues 101", []byte{}, []byte{}, 0}
-	alpha.Hash = []byte{0, 193, 197, 91, 204, 202, 150, 0, 152, 178, 150, 35, 108, 152, 68, 106, 19, 114, 152, 94, 9, 131, 80, 44, 246, 98, 103, 106, 207, 218, 75, 96}
-	alpha.Nonce = 314
+
+	// New K12.Sum256 values
+	alpha.Hash = []byte{0, 72, 127, 147, 61, 30, 56, 31, 247, 87, 166, 17, 121, 200, 25, 195, 11, 41, 49, 181, 182, 216, 30, 13, 203, 207, 161, 213, 112, 34, 212, 108}
+	alpha.Nonce = 5
+
+	// Old sha3.Sum256 values
+	//alpha.Hash = []byte{0, 193, 197, 91, 204, 202, 150, 0, 152, 178, 150, 35, 108, 152, 68, 106, 19, 114, 152, 94, 9, 131, 80, 44, 246, 98, 103, 106, 207, 218, 75, 96}
+	//alpha.Nonce = 314
 
 	header := "alpha/trans/"
 	dotblock := ".trans"

@@ -79,12 +79,15 @@ func AlphaGenesisBlock() *Block {
 	theOne := AlphaGenesis()
 	alphaTrans = append(alphaTrans, theOne)
 	alpha := &Block{1623289682, alphaTrans, []byte{}, []byte{}, 0, 1, 0, []byte{}, []byte{}}
-	// PoW functions not needed
-	// Hash is correct, hashed by MaxflowO2
-	alpha.Hash = []byte{0, 0, 91, 237, 75, 239, 186, 156, 203, 254, 5, 66, 134, 202, 179, 200, 24, 123, 177, 62, 127, 223, 166, 39, 79, 139, 178, 237, 146, 253, 100, 214}
-	// Nonce is correct, nonced by MaxflowO2
-	alpha.Nonce = 55995
+	// New K12.Sum256 values
+	alpha.Hash = []byte{0, 0, 131, 168, 228, 219, 228, 184, 223, 179, 126, 55, 55, 36, 55, 171, 23, 131, 204, 236, 181, 229, 18, 188, 113, 30, 105, 184, 71, 38, 246, 130}
+	alpha.Nonce = 62078
 	alpha.Difficulty = 16
+
+	// Old sha3.Sum256 values
+	//alpha.Hash = []byte{0, 0, 91, 237, 75, 239, 186, 156, 203, 254, 5, 66, 134, 202, 179, 200, 24, 123, 177, 62, 127, 223, 166, 39, 79, 139, 178, 237, 146, 253, 100, 214}
+	//alpha.Nonce = 55995
+	//alpha.Difficulty = 16
 
 	alpha.ToFile()
 

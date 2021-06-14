@@ -53,7 +53,7 @@ func MakeAddress() *MFCAddress {
 	mfcx := "MFCx"
 	keys := LoadKeys()
 	addypre := HashKeys(keys)
-	addy := addypre[12:]
+	addy := addypre[:]
 	addyString := hex.EncodeToString(addy)
 	value.MFCxAddy = mfcx + addyString
 	value.PublicKey = keys.PublicKey
