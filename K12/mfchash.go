@@ -23,16 +23,32 @@ package K12
 // nil custom string, change if you wish
 var customString []byte
 
+// Sum224([]byte)
+// Returns a []byte, len 28, K12 Hash
+func Sum224(input []byte) []byte {
+        value := make([]byte, 28)
+        K12Sum(customString, input, value)
+        return value
+}
+
 // Sum256([]byte)
-// Returns a [32]byte K12 Hash
+// Returns a []byte, len 32, K12 Hash
 func Sum256(input []byte) []byte {
 	value := make([]byte, 32)
 	K12Sum(customString, input, value)
 	return value
 }
 
+// Sum384([]byte)
+// Returns a []byte, len 48, K12 Hash
+func Sum384(input []byte) []byte {
+        value := make([]byte, 48)
+        K12Sum(customString, input, value)
+        return value
+}
+
 // Sum512([]byte)
-// Return a [64]byte K12 Hash
+// Return a []byte, len 64, K12 Hash
 func Sum512(input []byte) []byte {
 	value := make([]byte, 64)
 	K12Sum(customString, input, value)
