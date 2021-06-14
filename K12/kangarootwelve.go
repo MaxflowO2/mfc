@@ -35,7 +35,7 @@ type treeState struct {
 
 // The constructor requires a customization string.
 // It can be: empty, the name of your application, etc...
-// Note: I dit not follow golang.org/x/crypto/sha3/shake.go and did not defined a new interface here
+// Note: I dit not follow github.com/MaxflowO2/mfc/K12/shake.go and did not defined a new interface here
 func NewK12(customString []byte) treeState {
 	return treeState{
 		customString: customString,
@@ -45,7 +45,7 @@ func NewK12(customString []byte) treeState {
 }
 
 // A single-use function for
-// Note: I dit not follow golang.org/x/crypto/sha3/shake.go and reversed the `data` and `hash` arguments
+// Note: I dit not follow github.com/MaxflowO2/mfc/K12/shake.go and reversed the `data` and `hash` arguments
 func K12Sum(customString, data, hash []byte) {
 	h := NewK12(customString)
 	h.Write(data)

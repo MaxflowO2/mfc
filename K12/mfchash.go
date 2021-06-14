@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Huge shoutout to David Wong @ https://www.cryptologie.net/contact
-// We won't touch the orginals, but here's all the "SumXXX" values 
+// We won't touch the orginals, but here's all the "SumXXX" values
 // for you brother! Thank you for showing "us" aka MaxflowO2 the way!
 
 package K12

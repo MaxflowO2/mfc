@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 //
-// This code is taken (besides some minor modifications) from golang.org/x/crypto/sha3/sha3.go
+// This code is taken (besides some minor modifications) from github.com/MaxflowO2/mfc/K12/K12.go
 //
 package K12
 
@@ -133,7 +133,7 @@ func (d *state) padAndPermute(dsbyte byte) {
 // if more data is written to the ShakeHash after writing
 func (d *state) Write(p []byte) (written int, err error) {
 	if d.state != spongeAbsorbing {
-		panic("sha3: write to sponge after read")
+		panic("K12: write to sponge after read")
 	}
 	if d.buf == nil {
 		d.buf = d.storage[:0]

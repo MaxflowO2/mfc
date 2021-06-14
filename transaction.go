@@ -27,7 +27,7 @@ import (
 	"math/big"
 	"time"
 	//	"github.com/boltdb/bolt"
-	"golang.org/x/crypto/sha3"
+	"github.com/MaxflowO2/mfc/K12"
 )
 
 // Transaction{} struct
@@ -91,18 +91,18 @@ func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 }
 
 // powT.RunTrans()
-// sha3.Sum256 Hash of Transaction data
+// K12.Sum256 Hash of Transaction data
 // Returns Nonce, Hash
 func (powT *powTransaction) RunTrans() (int, []byte) {
 	var hashInt big.Int
-	var hash [32]byte
+	var hash []byte
 	tnonce := 0
 
 	fmt.Println("Mining the Transaction")
 	for tnonce < maxTransNonce {
 		data := powT.prepareTransData(tnonce)
 
-		hash = sha3.Sum256(data)
+		hash = K12.Sum256(data)
 		fmt.Printf("\r%x", hash)
 		hashInt.SetBytes(hash[:])
 
@@ -124,7 +124,7 @@ func (powT *powTransaction) ValidateTrans() bool {
 	var hashInt big.Int
 
 	data := powT.prepareTransData(powT.transaction.Nonce)
-	hash := sha3.Sum256(data)
+	hash := K12.Sum256(data)
 	hashInt.SetBytes(hash[:])
 
 	isValid := hashInt.Cmp(powT.target) == -1

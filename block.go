@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 	"encoding/hex"
 	"encoding/json"
-	"golang.org/x/crypto/sha3"
+	"github.com/MaxflowO2/mfc/K12"
 //	"github.com/boltdb/bolt"
 )
 
@@ -180,7 +180,7 @@ func (pow *ProofOfWork) sliceHash() []byte {
 		// add a "database addition" - Main database
 		// add a "database withdrawl" - Mempool
 	}
-	resultpre := sha3.Sum256(toHash)
+	resultpre := K12.Sum256(toHash)
 	result := resultpre[:]
 	return result
 }
@@ -209,7 +209,7 @@ func (pow *ProofOfWork) prepareData(nonce int, mroot []byte) []byte {
 // Returns Nonce, Hash
 func (pow *ProofOfWork) Run() (int, []byte, int) {
 	var hashInt big.Int
-	var hash [32]byte
+	var hash []byte
 	nonce := 0
 	mroot := pow.sliceHash()
 	fmt.Printf("Mining the block containing:\n \"%v\"\n", pow.block.Transactions)
@@ -217,7 +217,7 @@ func (pow *ProofOfWork) Run() (int, []byte, int) {
 
 		data := pow.prepareData(nonce, mroot)
 
-		hash = sha3.Sum256(data)
+		hash = K12.Sum256(data)
 		fmt.Printf("\r%x", hash)
 		hashInt.SetBytes(hash[:])
 
@@ -238,7 +238,7 @@ func (pow *ProofOfWork) Validate() bool {
 	var hashInt big.Int
 
 	data := pow.prepareData(pow.block.Nonce, pow.sliceHash())
-	hash := sha3.Sum256(data)
+	hash := K12.Sum256(data)
 	hashInt.SetBytes(hash[:])
 
 	isValid := hashInt.Cmp(pow.target) == -1

@@ -22,7 +22,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"crypto/ed25519"
-	"golang.org/x/crypto/sha3"
+	"github.com/MaxflowO2/mfc/K12"
 //	"log"
 //	"github.com/boltdb/bolt"
 )
@@ -41,7 +41,7 @@ type MFCAddress struct {
 // Takes MFCKeys {}
 // Returns []byte Hash
 func HashKeys(mfc MFCKeys) []byte {
-	pre := sha3.Sum256(mfc.PublicKey)
+	pre := K12.Sum256(mfc.PublicKey)
 	addy := pre[:]
 	return addy
 }
