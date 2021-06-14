@@ -54,7 +54,7 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 
 	prevHeight++
 	block.Height = prevHeight
-	block.Hash = hash[:]
+	block.Hash = hash
 	block.Nonce = nonce
 	block.Difficulty = diff
 	block.Signed = Sign(block.Hash)
@@ -222,7 +222,7 @@ func (pow *ProofOfWork) Run() (int, []byte, int) {
 
 		hash = K12.Sum256(data)
 		fmt.Printf("\r%x", hash)
-		hashInt.SetBytes(hash[:])
+		hashInt.SetBytes(hash)
 
 		if hashInt.Cmp(pow.target) == -1 {
 			break
@@ -242,7 +242,7 @@ func (pow *ProofOfWork) Validate() bool {
 
 	data := pow.prepareData(pow.block.Nonce, pow.sliceHash())
 	hash := K12.Sum256(data)
-	hashInt.SetBytes(hash[:])
+	hashInt.SetBytes(hash)
 
 	isValid := hashInt.Cmp(pow.target) == -1
 

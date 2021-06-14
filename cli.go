@@ -53,6 +53,7 @@ func (cli *CLI) addBlock() {
 	for i := 0; i < 26010; i++ {
 		fill := bsTransaction()
 		sendit = append(sendit, fill)
+		fmt.Printf("Transaction %v of 26010 done\n", i)
 	}
 	cli.bc.AddBlock(sendit)
 	fmt.Println("Success!")

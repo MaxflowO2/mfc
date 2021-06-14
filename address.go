@@ -41,8 +41,7 @@ type MFCAddress struct {
 // Takes MFCKeys {}
 // Returns []byte Hash
 func HashKeys(mfc MFCKeys) []byte {
-	pre := K12.Sum256(mfc.PublicKey)
-	addy := pre[:]
+	addy := K12.Sum256(mfc.PublicKey)
 	return addy
 }
 
@@ -52,8 +51,7 @@ func MakeAddress() *MFCAddress {
 	var value MFCAddress
 	mfcx := "MFCx"
 	keys := LoadKeys()
-	addypre := HashKeys(keys)
-	addy := addypre[:]
+	addy := HashKeys(keys)
 	addyString := hex.EncodeToString(addy)
 	value.MFCxAddy = mfcx + addyString
 	value.PublicKey = keys.PublicKey

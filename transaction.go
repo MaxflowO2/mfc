@@ -98,13 +98,13 @@ func (powT *powTransaction) RunTrans() (int, []byte) {
 	var hash []byte
 	tnonce := 0
 
-	fmt.Println("Mining the Transaction")
+//	fmt.Println("Mining the Transaction")
 	for tnonce < maxTransNonce {
 		data := powT.prepareTransData(tnonce)
 
 		hash = K12.Sum256(data)
-		fmt.Printf("\r%x", hash)
-		hashInt.SetBytes(hash[:])
+//		fmt.Printf("\r%x", hash)
+		hashInt.SetBytes(hash)
 
 		if hashInt.Cmp(powT.target) == -1 {
 			break
@@ -112,9 +112,9 @@ func (powT *powTransaction) RunTrans() (int, []byte) {
 			tnonce++
 		}
 	}
-	fmt.Print("\n")
+//	fmt.Print("\n")
 
-	return tnonce, hash[:]
+	return tnonce, hash
 }
 
 // powT.ValidateTrans()
@@ -125,7 +125,7 @@ func (powT *powTransaction) ValidateTrans() bool {
 
 	data := powT.prepareTransData(powT.transaction.Nonce)
 	hash := K12.Sum256(data)
-	hashInt.SetBytes(hash[:])
+	hashInt.SetBytes(hash)
 
 	isValid := hashInt.Cmp(powT.target) == -1
 
@@ -176,7 +176,7 @@ func bsTransaction() *Transaction {
 	powT := NewPOWTrans(bs)
 	nonce, hash := powT.RunTrans()
 
-	bs.Hash = hash[:]
+	bs.Hash = hash
 	bs.Nonce = nonce
 
 //	fmt.Println("Nonce: ", bs.Nonce)
