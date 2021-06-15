@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
+//	"strconv"
 	"time"
 //	"encoding/hex"
 )
@@ -35,7 +35,7 @@ func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  visatest - 15 seconds worth of Visa Transactions")
 //	fmt.Println("  addtodb - sends your Address to BoltDB")
-	fmt.Println("  autogen - creates a massive block every 60 seconds with nulltrans")
+	fmt.Println("  powtest - uses 10 transactions, with forced block gen at 15 seconds for PoW testing")
 	fmt.Println("  bstrans, creates a 'bs-transaction'")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
 }
@@ -53,18 +53,18 @@ func (cli *CLI) addBlock() {
 	for i := 0; i < 26010; i++ {
 		fill := bsTransaction()
 		sendit = append(sendit, fill)
-		fmt.Printf("Transaction %v of 26010 done\n", i)
+//		fmt.Printf("Transaction %v of 26010 done\n", i)
 	}
 	cli.bc.AddBlock(sendit)
 	fmt.Println("Success!")
 }
 
-func (cli *CLI) autoGen(t time.Time) {
+func (cli *CLI) powTest(t time.Time) {
 	var sendit []*Transaction
-	// Visa's 1,734 per second * 15 seconds
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 10; i++ {
 		fill := bsTransaction()
 		sendit = append(sendit, fill)
+//		fmt.Printf("Transaction %v of 10 done\n", i)
 	}
 	cli.bc.AddBlock(sendit)
 }
@@ -85,16 +85,14 @@ func (cli *CLI) printChain() {
 	for {
 		block := bci.Next()
 		fmt.Printf("Block Height: %v\n", block.Height)
-		fmt.Printf("Previous Hash:\n%x\n", block.PrevBlockHash)
+//		fmt.Printf("Previous Hash:\n%x\n", block.PrevBlockHash)
 //		fmt.Printf("Transactions in Block:\n%v\n", block.Transactions)
-		fmt.Printf("Hash: %x\n", block.Hash)
-		pow := NewProofOfWork(block)
-		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
+//		fmt.Printf("Hash: %x\n", block.Hash)
+//		pow := NewProofOfWork(block)
+//		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
 		fmt.Printf("Difficulty: %v\n", block.Difficulty)
-		//hangs
-		//		addy = RetreiveMFCAddressHex(block.HashBy)
-		fmt.Printf("Hashed By: %s\n", block.HashBy)
-		fmt.Printf("Signature: %x\n", block.Signed)
+//		fmt.Printf("Hashed By: %s\n", block.HashBy)
+//		fmt.Printf("Signature: %x\n", block.Signed)
 		fmt.Println()
 
 		if len(block.PrevBlockHash) == 0 {
@@ -110,7 +108,7 @@ func (cli *CLI) Run() {
 	addBlockCmd := flag.NewFlagSet("visatest", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 	//	addToDB := flag.NewFlagSet("addtodb", flag.ExitOnError)
-	autoGen := flag.NewFlagSet("autogen", flag.ExitOnError)
+	powTest := flag.NewFlagSet("powtest", flag.ExitOnError)
 	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
 	//	addBlockData := addBlockCmd.String("data", "", "Block data")
 
@@ -120,8 +118,8 @@ func (cli *CLI) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
-	case "autogen":
-		err := autoGen.Parse(os.Args[2:])
+	case "powtest":
+		err := powTest.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -152,8 +150,8 @@ func (cli *CLI) Run() {
 		cli.addBlock()
 	}
 
-	if autoGen.Parsed() {
-		Repeat(15*time.Second, cli.autoGen)
+	if powTest.Parsed() {
+		Repeat(15*time.Second, cli.powTest)
 	}
 
 	//	if addToDB.Parsed() {

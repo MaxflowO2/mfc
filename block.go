@@ -47,13 +47,13 @@ type Block struct {
 // Adds Timestamp, *Transaction, BlockHash, Hash, Nonce to *Block{}
 // Preforms PoW
 // Returns *Block{}
-func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int, target int) *Block {
-	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, LoadAddress(), []byte{}}
+func NewBlock(trans []*Transaction, lastHash []byte, lastHeight int, newTarget int) *Block {
+	block := &Block{time.Now().Unix(), trans, lastHash, []byte{}, 0, lastHeight, newTarget, LoadAddress(), []byte{}}
 	pow := NewProofOfWork(block)
 	nonce, hash, diff := pow.Run()
 
-	prevHeight++
-	block.Height = prevHeight
+	lastHeight++
+	block.Height = lastHeight
 	block.Hash = hash
 	block.Nonce = nonce
 	block.Difficulty = diff
@@ -94,49 +94,8 @@ func AlphaGenesisBlock() *Block {
 	return alpha
 }
 
-//	data, err := json.Marshal(alpha)
-//	if err != nil {
-//		fmt.Errorf("Couldn't Marshal AlphaNet Genesis Block, %v\n", err)
-//	}
-
-//	transdata, err := json.Marshal(theOne)
-//	if err != nil{
-//		fmt.Errorf("Couldn't Marshal the One Transaction in AlphaNet Genesis Block, %v\n", err)
-//	}
-
-//	db, err := setupDB()
-//	if err != nil {
-//		fmt.Errorf("Couldn't open mfc.db, %v\n", err)
-//	}
-//	defer db.Close()
-
-//	err = db.Update(func (tx *bolt.Tx) error {
-//		err := tx.Bucket([]byte(blocksBucket)).Put(alpha.Hash, alpha.Serialize())
-//		if err != nil {
-//			return fmt.Errorf("Alpha Genesis did not insert into mfc.db blocksBucket, code: %v\n", err)
-//			}
-
-//		err = tx.Bucket([]byte(blocksBucket)).Put([]byte("1"), alpha.Hash)
-//		if err != nil {
-//			return fmt.Errorf("Pointer Key not inserted at byte '1', code: %v\n", err)
-//			}
-
-//		err = tx.Bucket([]byte(blocksBucket)).Bucket([]byte(transInBlock)).Put(theOne.Hash, theOne.Serialize())
-//		if err != nil {
-//			return fmt.Errorf("Alpha Genesis Transaction did not insert into mfc.db blocksBucket.transInBlock, code: %v\n", err)
-//			} else {
-//			tx.Bucket([]byte(transactionBucket)).Delete(theOne.Hash)
-//			}
-//		return nil
-
-//	})
-
-//	return alpha
-//}
-
-// PoW functions
-
-const targetBits = 16
+// PoW functions below
+//const targetBits = 16
 
 // Variable set throughout pow.go
 var (
@@ -155,8 +114,8 @@ type ProofOfWork struct {
 // Returns *ProofOfWork{}
 func NewProofOfWork(b *Block) *ProofOfWork {
 	target := big.NewInt(1)
-	//newTargetBits := SetTargetBits()
-	target.Lsh(target, uint(256-targetBits))
+	newTargetBits := b.Difficulty
+	target.Lsh(target, uint(256-newTargetBits))
 
 	pow := &ProofOfWork{b, target}
 
@@ -198,7 +157,7 @@ func (pow *ProofOfWork) prepareData(nonce int, mroot []byte) []byte {
 			pow.block.PrevBlockHash,
 			mroot,
 			IntToHex(pow.block.Timestamp),
-			IntToHex(int64(targetBits)),
+			IntToHex(int64(pow.block.Difficulty)),
 			IntToHex(int64(nonce)),
 			[]byte(pow.block.HashBy),
 		},
@@ -216,13 +175,13 @@ func (pow *ProofOfWork) Run() (int, []byte, int) {
 	var hash []byte
 	nonce := 0
 	mroot := pow.sliceHash()
-	fmt.Printf("Mining the block containing:\n \"%v\"\n", pow.block.Transactions)
+//	fmt.Printf("Mining the block containing:\n \"%v\"\n", pow.block.Transactions)
 	for nonce < maxNonce {
 
 		data := pow.prepareData(nonce, mroot)
 
 		hash = K12.Sum256(data)
-		fmt.Printf("\r%x", hash)
+//		fmt.Printf("\r%x", hash)
 		hashInt.SetBytes(hash)
 
 		if hashInt.Cmp(pow.target) == -1 {
@@ -231,8 +190,8 @@ func (pow *ProofOfWork) Run() (int, []byte, int) {
 			nonce++
 		}
 	}
-	fmt.Print("\n")
-	return nonce, hash[:], targetBits
+	fmt.Printf("Block #%v mined\n\n", pow.block.Height)
+	return nonce, hash[:], pow.block.Difficulty
 }
 
 // pow.Validate()

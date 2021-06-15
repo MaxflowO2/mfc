@@ -43,15 +43,17 @@ func (bc *Blockchain) SetTargetBits() int {
 	// Sets time in seconds per Block
 	var targetTime = 60
 	// This number will be modified over time, initally targetBits
-	var newTargetBits = 16
+	var newTargetBits = 1
 	// Sets length of blocks for PoW Difficulty Adjustment
-	var targetBlocks = 120
+	var targetBlocks = 30
 	// -1 since we are immediately getting lastBlock of Blockchain
-	targetBlocks--
+	//targetBlocks--
 	bci := bc.Iterator()
 	lastBlock := bci.Next()          // sets lastBlock
 	lastDiff := lastBlock.Difficulty // Returns Last Difficulty
+	fmt.Printf("Last Difficulty: %v\n", lastDiff)
 	timeMeow := time.Now().Unix()    // Yes a Super Troopers Reference
+	fmt.Printf("timeMeow is: %v\n", timeMeow)
 	// finds the last timestamp of the targetBlock
 	// say targetBlock was 10, we only need 9 (see above)
 	// if you hit Genesis, code ends
@@ -60,28 +62,33 @@ func (bc *Blockchain) SetTargetBits() int {
 	for i = 0; i < targetBlocks; i++ {
 		block := bci.Next()
 		timeThen = block.Timestamp
+//		fmt.Printf("Checking block height of: %v\n", block.Height)
 		if len(block.PrevBlockHash) == 0 {
 			break
 		}
 	}
 	// a is either equal to or less than orginal targetBlocks
-	targetBlocks++ // now at orginal value
+	//targetBlocks++ // now at orginal value
 	i++            // sets count to proper number of blocks
 	if i < targetBlocks {
 		// set as old const targetBits
-		newTargetBits = 16
+		newTargetBits = 1
+		fmt.Printf("newTargetBits set at: %v\n", newTargetBits)
 	} else {
 		//            // sets time difference
 		tTime := timeMeow - timeThen
+		fmt.Printf("tTime is: %v\n", tTime)
 		totalTime := int(tTime)
 		// calculates seconds per block
 		spb := totalTime / targetBlocks
+		fmt.Printf("spb is: %v\n", spb)
 		if spb < targetTime {
 			newTargetBits = lastDiff + 1
 		}
 		if spb > targetTime {
 			newTargetBits = lastDiff - 1
 		}
+		fmt.Printf("newTargetBits now: %v\n", newTargetBits)
 	}
 	return newTargetBits
 }
