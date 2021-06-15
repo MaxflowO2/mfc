@@ -109,6 +109,19 @@ func (bc *Blockchain) SetTargetBits() int {
 	return newTargetBits
 }
 
+// bc.Checktime() bool
+func (bc *Blockchain) CheckTime() bool {
+        bci := bc.Iterator()
+        lastBlock := bci.Next()		// sets lastBlock
+	timeMeow := time.Now().Unix()	// sets timeMeow
+	deltaTime := timeMeow - lastBlock.Timestamp
+	// basically sets a forced 45 seconds inbetween blocks
+	if deltaTime < 45 {
+		return false
+	} else {
+		return true
+	}
+
 // bc.AddBlock(trans *Transaction)
 // Opens blockchain.db, pulls lashHash
 // Calls NewBlock(trans, lastHash)
@@ -133,7 +146,13 @@ func (bc *Blockchain) AddBlock(trans []*Transaction) {
 	lastHeight := lastBlock.Height
 	// For newTargetBits
 	newTarget := bc.SetTargetBits()
-	newBlock := NewBlock(trans, lastHash, lastHeight, newTarget)
+	// New time Function
+	answer := bc.CheckTime()
+	if answer == true {
+		newBlock := NewBlock(trans, lastHash, lastHeight, newTarget)
+	} else {
+		break
+	}
 
 	err = bc.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
