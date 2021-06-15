@@ -4,26 +4,30 @@ Block Functions: block.go and blockchain.go
 Create a Block // 0.0.1
 Block -> Block Chain // 0.0.1
 Add to Struct:
-	Height - What number is it? // Done, working
-	Difficulty - What value is it? // Done, working
+	Height - What number is it? // 0.0.8, working
+	Difficulty - What value is it? // 0.0.8, working
 	BlockRewards // Pending
-Slice of Transaction (multiple) // Done, working
-Add JSON for Transmitting // Pending
-Add JSON for Alphanet Genesis block // Pending
+Slice of Transaction (multiple) // 0.0.8, working
+Add JSON for Transmitting // 0.0.8, done
+Add JSON for Alphanet Genesis block // 0.0.8, done
+Time generation constraints // pending
 
 POW Function: pow.go
 Add POW to Block // 0.0.2
 Add POW to Transaction // 0.0.5
-Add String address to pow.go // Rollback, to 88cb6aa, pow = false with string over []byte
-Add "Merkel tree" of Transaction hashes // Primative done
-POW Modification over time // Pending
+Add String address to pow.go // 0.0.8
+Add "Merkel tree" of Transaction hashes // 0.0.8
+POW Modification over time // 0.0.9
 
 Transaction Functions: transaction.go
 Create Transaction // 0.0.4
 Add Transaction to Block // 0.0.7
-Add []*Transaction function // Pending (currently using append([]*t, t)
+Add []*Transaction function // 0.0.8
 Add Transaction to Database // Pending
-Add JSON for Transmitting // Pending
+Add JSON for Transmitting // 0.0.8
+Transaction overhaul:
+	New Struct (Send, Receive, Amount, Coin Type, Name, Timestamp, Signature)
+	Hash Transaction
 
 Crypto Functions: keys.go
 Keygenesis ed25519 // 0.0.5
@@ -31,18 +35,22 @@ Signatures ed25519 // 0.0.5
 Verify Sig ed25519 globally // Pending
 Saving Keys to file // 0.0.6
 Loading Keys from file // 0.0.6
+K12 Hashing // 0.0.9
 
 Addressing Functions: address.go
 Addresses // 0.0.5
 Keys -> Address // 0.0.5
 MFCx Address // 0.0.7
 Add Address to Transaction // 0.0.6
-Add Address to Block // Done
+Add Address to Block // 0.0.8
 Create Struct for DB // 0.0.7
 Transmit Struct for Sig Verify // Pending
-Adjust Address to MFCx[12:] len = 24 // Done
-Adding error checking to Address // Pending
-
+Adjust Address // 0.0.9 (was MFCx "sha3.sum256(publicKey)", now MFCx"K12.sum256(PublicKey)")
+Adding error checking to Address:
+	MFCx error
+	Signature Verify
+	Balance functions
+	
 Consensus Function: (ghost.go when developed)
 Develop GHOST
 
@@ -55,11 +63,12 @@ Add Contract Addresses
 Database Functions: blockchain.db, address.db, transaction.db
 Add Database (Block/Blockchain) // 0.0.3
 Trie/UTXO function
+	Delta Bolt.DB hash
 	CapCoin added - deflationary cryptocurrency
 	Fructose added - inflationary cryptocurrency
 	Glucose added - ATP token
 	MFCxPoS added - PoS Token, ATP generation
-Opimize BoltDB
+Opimize BoltDB // pending, working and have alternate db files
 	Blocks/Transactions
 	Addresses/UTXO (Trie tree?)
 Punt BoltDB or Keep BoltDB?
