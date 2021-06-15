@@ -1,3 +1,4 @@
+// (blockchain.go) contains Bolt.DB commands for ./mfc
 // Copyright (C) 2021 MaxflowO2, the only author of Max Flow Chain
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,9 +18,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/boltdb/bolt"
 	"log"
 	"time"
-	"github.com/boltdb/bolt"
 )
 
 const dbFile = "blockchain.db"
@@ -44,15 +45,20 @@ func (bc *Blockchain) SetTargetBits() int {
 	var targetTime = 60
 	// This number will be modified over time, initally targetBits
 	var newTargetBits = 1
-	// Sets length of blocks for PoW Difficulty Adjustment
-	var targetBlocks = 30
+	// Sets length of blocks for PoW Difficulty Scan
+	var targetBlocks = 120
+	// Sets length of blocks per adjustment "aka epoch below"
+	var adjustBlocks = 60
+	// Sets tolerance of time adjustment
+	var plusMinus = 1
 	// -1 since we are immediately getting lastBlock of Blockchain
-	//targetBlocks--
+	targetBlocks--
 	bci := bc.Iterator()
 	lastBlock := bci.Next()          // sets lastBlock
+	lastHeight := lastBlock.Height   // Returns Last Block Height
 	lastDiff := lastBlock.Difficulty // Returns Last Difficulty
 	fmt.Printf("Last Difficulty: %v\n", lastDiff)
-	timeMeow := time.Now().Unix()    // Yes a Super Troopers Reference
+	timeMeow := time.Now().Unix() // Yes a Super Troopers Reference
 	fmt.Printf("timeMeow is: %v\n", timeMeow)
 	// finds the last timestamp of the targetBlock
 	// say targetBlock was 10, we only need 9 (see above)
@@ -62,31 +68,41 @@ func (bc *Blockchain) SetTargetBits() int {
 	for i = 0; i < targetBlocks; i++ {
 		block := bci.Next()
 		timeThen = block.Timestamp
-//		fmt.Printf("Checking block height of: %v\n", block.Height)
+		//fmt.Printf("Checking block height of: %v\n", block.Height)
 		if len(block.PrevBlockHash) == 0 {
 			break
 		}
 	}
+	fmt.Printf("timeThen is: %v\n", timeThen)
 	// a is either equal to or less than orginal targetBlocks
-	//targetBlocks++ // now at orginal value
+	targetBlocks++ // now at orginal value
 	i++            // sets count to proper number of blocks
 	if i < targetBlocks {
 		// set as old const targetBits
-		newTargetBits = 1
+		fmt.Println("too few blocks")
 		fmt.Printf("newTargetBits set at: %v\n", newTargetBits)
 	} else {
-		//            // sets time difference
+		// sets time difference
 		tTime := timeMeow - timeThen
-		fmt.Printf("tTime is: %v\n", tTime)
+		fmt.Printf("time over %v blocks is: %v\n", targetBlocks, tTime)
 		totalTime := int(tTime)
 		// calculates seconds per block
 		spb := totalTime / targetBlocks
-		fmt.Printf("spb is: %v\n", spb)
-		if spb < targetTime {
-			newTargetBits = lastDiff + 1
-		}
-		if spb > targetTime {
-			newTargetBits = lastDiff - 1
+		fmt.Printf("seconds per block is: %v\ntarget is: %v\n", spb, targetTime)
+		// makes this a +/- of 3 seconds
+		upperlim := (targetTime + plusMinus)*targetBlocks
+		lowerlim := (targetTime - plusMinus)*targetBlocks
+		epoch := lastHeight % adjustBlocks
+		if epoch == 0 {
+			if totalTime < lowerlim {
+				newTargetBits = lastDiff + 1
+			} else if totalTime > upperlim {
+				newTargetBits = lastDiff - 1
+			} else {
+				newTargetBits = lastDiff
+			}
+		} else {
+			newTargetBits = lastDiff
 		}
 		fmt.Printf("newTargetBits now: %v\n", newTargetBits)
 	}

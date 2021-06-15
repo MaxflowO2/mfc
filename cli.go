@@ -151,7 +151,7 @@ func (cli *CLI) Run() {
 	}
 
 	if powTest.Parsed() {
-		Repeat(15*time.Second, cli.powTest)
+		Repeat(1*time.Second, cli.powTest)
 	}
 
 	//	if addToDB.Parsed() {
