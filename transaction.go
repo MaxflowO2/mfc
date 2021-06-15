@@ -36,8 +36,8 @@ import (
 type Transaction struct {
 	Timestamp int64
 	// update Sender/Reciever to string v0.0.8
-	Sender    []byte
-	Receiver  []byte
+	Sender    string
+	Receiver  string
 	Amount    uint64
 	Message   string
 	Signature []byte
@@ -76,8 +76,8 @@ func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 		[][]byte{
 			IntToHex(int64(powT.transaction.Timestamp)),
 			// update Sender/Reciever to string v0.0.8
-			powT.transaction.Sender,
-			powT.transaction.Receiver,
+			[]byte(powT.transaction.Sender),
+			[]byte(powT.transaction.Receiver),
 			IntToHex(int64(powT.transaction.Amount)),
 			[]byte(powT.transaction.Message),
 			powT.transaction.Signature,
@@ -147,13 +147,13 @@ func SliceTransaction(t *Transaction, st []*Transaction) []*Transaction {
 func bsTransaction() *Transaction {
 	a := KeyGen()
 	b := KeyGen()
-	sender := HashKeys(a)
-	receiver := HashKeys(b)
+	sender := "MFCx" + hex.EncodeToString(HashKeys(a))
+	receiver := "MFCx" + hex.EncodeToString(HashKeys(b))
 	var amount uint64 = 0
 	message := bytes.Join(
 		[][]byte{
-			sender,
-			receiver,
+			[]byte(sender),
+			[]byte(receiver),
 			IntToHex(int64(amount)),
 		},
 		[]byte{},
@@ -188,7 +188,7 @@ func bsTransaction() *Transaction {
 // AlphaNet Genesis use
 func AlphaGenesis() *Transaction {
 	var alpha *Transaction
-	alpha = &Transaction{1623289682, []byte{}, []byte{}, 0, "AlphaNet of MaxFlowChain, created for testing purposes on 6/9/2021, www.nytimes.com/2021/06/09/technology/bitcoin-untraceable-pipeline-ransomware.html issues 101", []byte{}, []byte{}, 0}
+	alpha = &Transaction{1623289682, "", "", 0, "AlphaNet of MaxFlowChain, created for testing purposes on 6/9/2021, www.nytimes.com/2021/06/09/technology/bitcoin-untraceable-pipeline-ransomware.html issues 101", []byte{}, []byte{}, 0}
 
 	// New K12.Sum256 values
 	alpha.Hash = []byte{0, 72, 127, 147, 61, 30, 56, 31, 247, 87, 166, 17, 121, 200, 25, 195, 11, 41, 49, 181, 182, 216, 30, 13, 203, 207, 161, 213, 112, 34, 212, 108}

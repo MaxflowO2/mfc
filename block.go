@@ -39,7 +39,7 @@ type Block struct {
 	Nonce         int
 	Height        int
 	Difficulty    int
-	HashBy        []byte
+	HashBy        string
 	Signed        []byte
 }
 
@@ -48,7 +48,7 @@ type Block struct {
 // Preforms PoW
 // Returns *Block{}
 func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block {
-	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, []byte(LoadAddress()), []byte{}}
+	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, LoadAddress(), []byte{}}
 	pow := NewProofOfWork(block)
 	nonce, hash, diff := pow.Run()
 
@@ -78,7 +78,7 @@ func AlphaGenesisBlock() *Block {
 	var alphaTrans []*Transaction
 	theOne := AlphaGenesis()
 	alphaTrans = append(alphaTrans, theOne)
-	alpha := &Block{1623289682, alphaTrans, []byte{}, []byte{}, 0, 1, 0, []byte{}, []byte{}}
+	alpha := &Block{1623289682, alphaTrans, []byte{}, []byte{}, 0, 1, 0, "", []byte{}}
 	// New K12.Sum256 values
 	alpha.Hash = []byte{0, 0, 131, 168, 228, 219, 228, 184, 223, 179, 126, 55, 55, 36, 55, 171, 23, 131, 204, 236, 181, 229, 18, 188, 113, 30, 105, 184, 71, 38, 246, 130}
 	alpha.Nonce = 62078
@@ -199,7 +199,7 @@ func (pow *ProofOfWork) prepareData(nonce int, mroot []byte) []byte {
 			IntToHex(pow.block.Timestamp),
 			IntToHex(int64(targetBits)),
 			IntToHex(int64(nonce)),
-			pow.block.HashBy,
+			[]byte(pow.block.HashBy),
 		},
 		[]byte{},
 	)
