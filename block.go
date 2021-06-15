@@ -47,7 +47,7 @@ type Block struct {
 // Adds Timestamp, *Transaction, BlockHash, Hash, Nonce to *Block{}
 // Preforms PoW
 // Returns *Block{}
-func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block {
+func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int, target int) *Block {
 	block := &Block{time.Now().Unix(), trans, prevBlockHash, []byte{}, 0, prevHeight, 0, LoadAddress(), []byte{}}
 	pow := NewProofOfWork(block)
 	nonce, hash, diff := pow.Run()
@@ -71,7 +71,7 @@ func NewBlock(trans []*Transaction, prevBlockHash []byte, prevHeight int) *Block
 // Returns *Block{}
 func NewGenesisBlock() *Block {
 	var genesis []*Transaction
-	return NewBlock(genesis, []byte{}, 0)
+	return NewBlock(genesis, []byte{}, 0, 16)
 }
 
 func AlphaGenesisBlock() *Block {
@@ -155,6 +155,7 @@ type ProofOfWork struct {
 // Returns *ProofOfWork{}
 func NewProofOfWork(b *Block) *ProofOfWork {
 	target := big.NewInt(1)
+	//newTargetBits := SetTargetBits()
 	target.Lsh(target, uint(256-targetBits))
 
 	pow := &ProofOfWork{b, target}

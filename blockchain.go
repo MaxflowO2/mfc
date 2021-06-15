@@ -18,7 +18,7 @@ package main
 import (
 	"fmt"
 	"log"
-	//	"time"
+	"time"
 	"github.com/boltdb/bolt"
 )
 
@@ -39,52 +39,52 @@ type BlockchainIterator struct {
 
 // SetTargetBits()
 // Update for v0.0.8
-//func (bc *Blockchain) SetTargetBits() int {
-// Sets time in seconds per Block
-//	var targetTime = 60
-// This number will be modified over time, initally targetBits
-//      var newTargetBits = 16
-// Sets length of blocks for PoW Difficulty Adjustment
-//    var targetBlocks = 64
-// -1 since we are immediately getting lastBlock of Blockchain
-//targetBlocks--
-////        bci := bc.Iterator()
-//        lastBlock := bci.Next() // sets lastBlock
-//        lastDiff := lastBlock.Difficulty // Returns Last Difficulty
-//        timeMeow := time.Now().Unix() // Yes a Super Troopers Reference
-// finds the last timestamp of the targetBlock
-// say targetBlock was 10, we only need 9 (see above)
-// if you hit Genesis, code ends
-//        var i int
-//      var timeThen int64
-//    for i = 0; i < targetBlocks; i++ {
-//          block := bci.Next()
-//        timeThen = block.Timestamp
-//      if len(block.PrevBlockHash) == 0 {
-//            break
-//  }
-//        }
-//      // a is either equal to or less than orginal targetBlocks
-//    targetBlocks++ // now at orginal value
-//  i++ // sets count to proper number of blocks
-//if i < targetBlocks {
-// set as old const targetBits
-//                newTargetBits = 16
-//      } else {
-//            // sets time difference
-//          tTime := timeMeow - timeThen
-//	totalTime := int(tTime)
-//      // calculates seconds per block
-//    spb := totalTime/targetBlocks
-//  if spb < targetTime {
-//        newTargetBits = lastDiff + 1
-//                }
-//              if spb > targetTime {
-//                    newTargetBits = lastDiff - 1
-//          }
-//}
-//	return newTargetBits
-//}
+func (bc *Blockchain) SetTargetBits() int {
+	// Sets time in seconds per Block
+	var targetTime = 60
+	// This number will be modified over time, initally targetBits
+	var newTargetBits = 16
+	// Sets length of blocks for PoW Difficulty Adjustment
+	var targetBlocks = 120
+	// -1 since we are immediately getting lastBlock of Blockchain
+	targetBlocks--
+	bci := bc.Iterator()
+	lastBlock := bci.Next()          // sets lastBlock
+	lastDiff := lastBlock.Difficulty // Returns Last Difficulty
+	timeMeow := time.Now().Unix()    // Yes a Super Troopers Reference
+	// finds the last timestamp of the targetBlock
+	// say targetBlock was 10, we only need 9 (see above)
+	// if you hit Genesis, code ends
+	var i int
+	var timeThen int64
+	for i = 0; i < targetBlocks; i++ {
+		block := bci.Next()
+		timeThen = block.Timestamp
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+	// a is either equal to or less than orginal targetBlocks
+	targetBlocks++ // now at orginal value
+	i++            // sets count to proper number of blocks
+	if i < targetBlocks {
+		// set as old const targetBits
+		newTargetBits = 16
+	} else {
+		//            // sets time difference
+		tTime := timeMeow - timeThen
+		totalTime := int(tTime)
+		// calculates seconds per block
+		spb := totalTime / targetBlocks
+		if spb < targetTime {
+			newTargetBits = lastDiff + 1
+		}
+		if spb > targetTime {
+			newTargetBits = lastDiff - 1
+		}
+	}
+	return newTargetBits
+}
 
 // bc.AddBlock(trans *Transaction)
 // Opens blockchain.db, pulls lashHash
@@ -109,8 +109,8 @@ func (bc *Blockchain) AddBlock(trans []*Transaction) {
 	// For Height
 	lastHeight := lastBlock.Height
 	// For newTargetBits
-	//	newTarget := bc.SetTargetBits()
-	newBlock := NewBlock(trans, lastHash, lastHeight)
+	newTarget := bc.SetTargetBits()
+	newBlock := NewBlock(trans, lastHash, lastHeight, newTarget)
 
 	err = bc.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
