@@ -6,15 +6,15 @@ Currently Completed, and what to expect soon:<br>
 <ul style="list-style: circle">
   <li>CLI: Under revision</li>
   <li>Crypto/Keys: Completed.</li>
-  <li>Crypto/Address: Under revision</li>
-  <li>Transactions: Under revision, issue with pow/string values, database missing</li>
+  <li>Crypto/Address: Under revision, adding ed25519 signature commands, also DB, adding errors</li>
+  <li>Transactions: Under revision, adding DB commands</li>
   <li>Smart Contract Language: Started, not finished as of yet</li>
-  <li>Mempool/Txpool Protocol: Research and Development phase</li>
-  <li>UTXO/Trie Protocol: Research and Development phase</li>
-  <li>Blocks: Under revision, issue with pow/string values</li>
-  <li>PoW Function: Currently revising from static to dynamic</li>
+  <li>Mempool/Txpool Protocol: Research and Development phase, may ignore and use hash of db</li>
+  <li>UTXO/Trie Protocol: Research and Development phase, under address struct, coming soon</li>
+  <li>Blocks: Under revision, adding errors</li>
+  <li>PoW Function: Currently testing</li>
   <li>Block propagation: Not implemented, no P2P yet</li>
-  <li>Blockchain: Completed, may need rework with pow</li>
+  <li>Blockchain: Completed, mild revisions left</li>
   <li>Consensus Protocol: Research and Development of pure GHOST</li>
   <li>Network: Not implimented</li>
   <li>PoS release? - Research and Development phase</li>
