@@ -1,0 +1,97 @@
+// (newtransaction.go) - Contains the core Transaction commands in mfc
+// Copyright (C) 2021 MaxflowO2, the only author of Max Flow Chain
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+package trans
+
+import(
+	"fmt"
+        "bytes"
+        "time"
+        "math"
+        "math/big"
+	"crypto/ed25519"
+	"encoding/json"
+	"encoding/hex"
+	"io/ioutil"
+//	"github.com/boltdb/bolt"
+        "golang.org/x/crypto/sha3"
+)
+
+// Basic transmitted transaction on p2p network
+type Mempool struct {
+	Sender		string
+	Receiver	string
+	Amount		uint64
+	Type		string
+	TypeName	string
+	//ATPCost	uint
+	Signature	[]byte
+}
+
+// Basic hashed struct heading to newblock.go
+type Transaction struct {
+	Transaction	Mempool
+	IsValid		bool
+	Rewards		string
+	Nonce		int
+	Hash		[]byte
+	//ATPUsed	uint
+	Signature	[]byte
+}
+
+// Creates a Mempool struct
+func createMempool(r string, t string, a uint) {
+	var value Mempool
+	// Sender must be you
+	// Load address from file
+	// Is address in Bolt.DB
+	// if so fetch Key Value
+	// if not return err
+	// Receiver must be in Bolt.DB
+	// if so return bool and below
+	value.Receiver = r
+	// Type must be in Bolt.DB
+	value.Type = t
+	// Fetch Name from Bolt.DB
+	value.Amount = a
+	// Run GetBal() from Sender
+	// if all above passes
+	// CalculateATP()
+	// makeMessage(Sender, Receiver, Amount, Type, Name, ATPCost)
+	// Sign(makeMessage)
+	// Make xxx.mempool
+	// Transmit on p2p as JSON
+}
+
+func mineTransaction(m Mempool) string {
+	// Verify Sender
+	// Verify Balance
+	// Verify Receiver
+	// Verify Amount > Balance
+	// Verify Type exists
+	// Verify TypeName
+	// Verify ATPCost
+	// Verify Signature
+	// Run ChangeBal(Sender)
+	// Run ChangeBal(Receiver)
+	// Add Rewards (string)
+	// Run ChangeBal(rewards)
+	// Run PoW (nonce/hash)
+	// Sign(hash)
+	// Save file to Bolt.DB
+	// all that shit to string
+	// Return String
+}
