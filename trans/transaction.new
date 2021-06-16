@@ -26,7 +26,7 @@ import(
 	"encoding/json"
 	"encoding/hex"
 	"io/ioutil"
-//	"github.com/boltdb/bolt"
+	"github.com/boltdb/bolt"
         "golang.org/x/crypto/sha3"
 )
 
@@ -57,8 +57,9 @@ func createMempool(r string, t string, a uint) {
 	var value Mempool
 	// Sender must be you
 	// Load address from file
+	Sender := LoadAddress()
 	// Is address in Bolt.DB
-	// if so fetch Key Value
+	// fetch bucket, see if a value shows up
 	// if not return err
 	// Receiver must be in Bolt.DB
 	// if so return bool and below
