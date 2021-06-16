@@ -39,7 +39,7 @@ type BlockchainIterator struct {
 }
 
 // SetTargetBits()
-// Update for v0.0.8
+// Sets the newTargetBits for Block PoW function
 func (bc *Blockchain) SetTargetBits() int {
 	// Sets time in seconds per Block
 	var targetTime = 60
@@ -49,17 +49,17 @@ func (bc *Blockchain) SetTargetBits() int {
 	var targetBlocks = 120
 	// Sets length of blocks per adjustment "aka epoch below"
 	var adjustBlocks = 60
-	// Sets tolerance of time adjustment
-	var plusMinus = 1
+	// Sets tolerance of time adjustment, 5% is usually best
+	var plusMinus = 3
 	// -1 since we are immediately getting lastBlock of Blockchain
 	targetBlocks--
 	bci := bc.Iterator()
 	lastBlock := bci.Next()          // sets lastBlock
 	lastHeight := lastBlock.Height   // Returns Last Block Height
 	lastDiff := lastBlock.Difficulty // Returns Last Difficulty
-	fmt.Printf("Last Difficulty: %v\n", lastDiff)
+	//fmt.Printf("Last Difficulty: %v\n", lastDiff)
 	timeMeow := time.Now().Unix() // Yes a Super Troopers Reference
-	fmt.Printf("timeMeow is: %v\n", timeMeow)
+	//fmt.Printf("timeMeow is: %v\n", timeMeow)
 	// finds the last timestamp of the targetBlock
 	// say targetBlock was 10, we only need 9 (see above)
 	// if you hit Genesis, code ends
@@ -73,25 +73,25 @@ func (bc *Blockchain) SetTargetBits() int {
 			break
 		}
 	}
-	fmt.Printf("timeThen is: %v\n", timeThen)
+	//fmt.Printf("timeThen is: %v\n", timeThen)
 	// a is either equal to or less than orginal targetBlocks
 	targetBlocks++ // now at orginal value
 	i++            // sets count to proper number of blocks
 	if i < targetBlocks {
 		// set as old const targetBits
-		fmt.Println("too few blocks")
-		fmt.Printf("newTargetBits set at: %v\n", newTargetBits)
+		//fmt.Println("too few blocks")
+		//fmt.Printf("newTargetBits set at: %v\n", newTargetBits)
 	} else {
 		// sets time difference
 		tTime := timeMeow - timeThen
-		fmt.Printf("time over %v blocks is: %v\n", targetBlocks, tTime)
+		//fmt.Printf("time over %v blocks is: %v\n", targetBlocks, tTime)
 		totalTime := int(tTime)
 		// calculates seconds per block
-		spb := totalTime / targetBlocks
-		fmt.Printf("seconds per block is: %v\ntarget is: %v\n", spb, targetTime)
+		//spb := totalTime / targetBlocks
+		//fmt.Printf("seconds per block is: %v\ntarget is: %v\n", spb, targetTime)
 		// makes this a +/- of 3 seconds
-		upperlim := (targetTime + plusMinus)*targetBlocks
-		lowerlim := (targetTime - plusMinus)*targetBlocks
+		upperlim := (targetTime + plusMinus) * targetBlocks
+		lowerlim := (targetTime - plusMinus) * targetBlocks
 		epoch := lastHeight % adjustBlocks
 		if epoch == 0 {
 			if totalTime < lowerlim {
@@ -104,16 +104,16 @@ func (bc *Blockchain) SetTargetBits() int {
 		} else {
 			newTargetBits = lastDiff
 		}
-		fmt.Printf("newTargetBits now: %v\n", newTargetBits)
+		//fmt.Printf("newTargetBits now: %v\n", newTargetBits)
 	}
 	return newTargetBits
 }
 
 // bc.Checktime() bool
 func (bc *Blockchain) CheckTime() bool {
-        bci := bc.Iterator()
-        lastBlock := bci.Next()		// sets lastBlock
-	timeMeow := time.Now().Unix()	// sets timeMeow
+	bci := bc.Iterator()
+	lastBlock := bci.Next()       // sets lastBlock
+	timeMeow := time.Now().Unix() // sets timeMeow
 	deltaTime := timeMeow - lastBlock.Timestamp
 	// basically sets a forced 45 seconds inbetween blocks
 	if deltaTime < 45 {
@@ -121,6 +121,7 @@ func (bc *Blockchain) CheckTime() bool {
 	} else {
 		return true
 	}
+}
 
 // bc.AddBlock(trans *Transaction)
 // Opens blockchain.db, pulls lashHash
@@ -150,26 +151,26 @@ func (bc *Blockchain) AddBlock(trans []*Transaction) {
 	answer := bc.CheckTime()
 	if answer == true {
 		newBlock := NewBlock(trans, lastHash, lastHeight, newTarget)
-	} else {
-		break
-	}
 
-	err = bc.db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(blocksBucket))
-		err := b.Put(newBlock.Hash, newBlock.Serialize())
-		if err != nil {
-			log.Panic(err)
-		}
+		err = bc.db.Update(func(tx *bolt.Tx) error {
+			b := tx.Bucket([]byte(blocksBucket))
+			err := b.Put(newBlock.Hash, newBlock.Serialize())
+			if err != nil {
+				log.Panic(err)
+			}
 
-		err = b.Put([]byte("l"), newBlock.Hash)
-		if err != nil {
-			log.Panic(err)
-		}
+			err = b.Put([]byte("l"), newBlock.Hash)
+			if err != nil {
+				log.Panic(err)
+			}
 
-		bc.tip = newBlock.Hash
+			bc.tip = newBlock.Hash
 
-		return nil
-	})
+			return nil
+		})
+	} //else {
+		//fmt.Println("Too early for next block, standby")
+	//}
 }
 
 // Iterator()
