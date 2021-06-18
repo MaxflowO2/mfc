@@ -46,9 +46,9 @@ func (bc *Blockchain) SetTargetBits() int {
 	// This number will be modified over time, initally targetBits
 	var newTargetBits = 1
 	// Sets length of blocks for PoW Difficulty Scan
-	var targetBlocks = 12
+	var targetBlocks = 120
 	// Sets length of blocks per adjustment "aka epoch below"
-	var adjustBlocks = 6
+	var adjustBlocks = 60
 	// Sets tolerance of time adjustment, 5% is usually best
 	var plusMinus = 3
 	// -1 since we are immediately getting lastBlock of Blockchain
@@ -80,7 +80,7 @@ func (bc *Blockchain) SetTargetBits() int {
 	if i < targetBlocks {
 		// set as old const targetBits
 		//fmt.Println("too few blocks")
-		//fmt.Printf("newTargetBits set at: %v\n", newTargetBits)
+		fmt.Printf("newTargetBits set at: %v\n", newTargetBits)
 	} else {
 		// sets time difference
 		tTime := timeMeow - timeThen

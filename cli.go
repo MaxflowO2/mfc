@@ -36,7 +36,7 @@ func (cli *CLI) printUsage() {
 	fmt.Println("  visatest - 15 seconds worth of Visa Transactions")
 //	fmt.Println("  addtodb - sends your Address to BoltDB")
 	fmt.Println("  powtest - uses 10 transactions, with forced block gen at 15 seconds for PoW testing")
-	fmt.Println("  bstrans, creates a 'bs-transaction'")
+	fmt.Println("  powvisatest - runs visatest every 35 seconds")
 	fmt.Println("  printchain - print all the blocks of the blockchain")
 }
 
@@ -55,7 +55,7 @@ func (cli *CLI) addBlock() {
 		fill := bsTransaction()
 		sendit = append(sendit, fill)
 		j := i+1
-		fmt.Printf(" Transactions of visa test")
+		fmt.Printf(" of 26010 Transactions of visa test")
 		fmt.Printf("\r%v", j)
 	}
 	fmt.Printf("\n")
@@ -69,7 +69,7 @@ func (cli *CLI) addBlock() {
 //	avgProcess := timeProcess / 26010
 //	avgTime := timeTotal / 26010
 	fmt.Printf("Time to process %v transactions is %v\n", numb, timeProcess)
-	fmt.Printf("Total time to process %v transactions is %v\n", numb, timeTotal)
+	fmt.Printf("Time to in block %v transactions is %v\n", numb, timeTotal)
 	fmt.Println("Success!")
 }
 
@@ -88,8 +88,8 @@ func (cli *CLI) powTest(t time.Time) {
 //        AddAddress(addy)
 //}
 
-func (cli *CLI) bsTrans() {
-	bsTransaction()
+func (cli *CLI) powVisaTest(t time.Time) {
+	cli.addBlock()
 }
 
 func (cli *CLI) printChain() {
@@ -123,7 +123,7 @@ func (cli *CLI) Run() {
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 	//	addToDB := flag.NewFlagSet("addtodb", flag.ExitOnError)
 	powTest := flag.NewFlagSet("powtest", flag.ExitOnError)
-	bsTrans := flag.NewFlagSet("bstrans", flag.ExitOnError)
+	powVisaTest := flag.NewFlagSet("powvisatest", flag.ExitOnError)
 	//	addBlockData := addBlockCmd.String("data", "", "Block data")
 
 	switch os.Args[1] {
@@ -144,8 +144,8 @@ func (cli *CLI) Run() {
 		//			log.Panic(err)
 		//		}
 
-	case "bstrans":
-		err := bsTrans.Parse(os.Args[2:])
+	case "powvisatest":
+		err := powVisaTest.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -172,8 +172,8 @@ func (cli *CLI) Run() {
 	//		cli.addToDB()
 	//	}
 
-	if bsTrans.Parsed() {
-		cli.bsTrans()
+	if powVisaTest.Parsed() {
+		Repeat(35*time.Second, cli.powVisaTest)
 	}
 
 	if printChainCmd.Parsed() {
