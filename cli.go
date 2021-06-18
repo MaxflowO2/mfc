@@ -49,13 +49,27 @@ func (cli *CLI) validateArgs() {
 
 func (cli *CLI) addBlock() {
 	var sendit []*Transaction
+	timeOne := time.Now().Unix()
 	// Visa's 1,734 per second * 15 seconds
 	for i := 0; i < 26010; i++ {
 		fill := bsTransaction()
 		sendit = append(sendit, fill)
-//		fmt.Printf("Transaction %v of 26010 done\n", i)
+		j := i+1
+		fmt.Printf(" Transactions of visa test")
+		fmt.Printf("\r%v", j)
 	}
+	fmt.Printf("\n")
+	timeTwo := time.Now().Unix()
 	cli.bc.AddBlock(sendit)
+	timeThree := time.Now().Unix()
+//	visaTime := 15
+	timeProcess := timeTwo - timeOne
+	timeTotal := timeThree - timeOne
+	numb := 26010
+//	avgProcess := timeProcess / 26010
+//	avgTime := timeTotal / 26010
+	fmt.Printf("Time to process %v transactions is %v\n", numb, timeProcess)
+	fmt.Printf("Total time to process %v transactions is %v\n", numb, timeTotal)
 	fmt.Println("Success!")
 }
 
@@ -151,7 +165,7 @@ func (cli *CLI) Run() {
 	}
 
 	if powTest.Parsed() {
-		Repeat(1*time.Second, cli.powTest)
+		Repeat(1*time.Millisecond, cli.powTest)
 	}
 
 	//	if addToDB.Parsed() {

@@ -46,6 +46,44 @@ type Transaction struct {
 	Nonce     int
 }
 
+// Mempool struct
+// Used to create transactions within ./mfc
+// Will be transmitted on ./mfc p2p
+// v0.0.10
+type Mempool struct {
+	Timestamp	int64
+	Sender		string
+	Receiver	string
+	Amount		uint64
+	Type		string
+	Name		string
+	//ATPCost	uint
+	Signature	[]byte
+}
+
+// MinedMempool struct
+// Is a mined Mempool struct using PoW functions below
+// Will be inserted into a block as a string
+// v0.0.10
+type MinedMempool struct {
+	mempool		Mempool
+	Timestamp	int64
+	IsValid		bool
+	Rewards		string
+	//ATPUsed	uint
+	Nonce		int
+	Hash		[]byte
+	Signature	[]byte
+}
+
+// powMempool struct
+// Used as a struct for mining
+// v0.0.10
+type powMempool struct {
+	toMine		*MinedMempool
+	target		*big.Int
+}
+
 // powTransaction {} struct
 // Used for powT functions below
 // Remove for v0.0.10
@@ -56,8 +94,20 @@ type powTransaction struct {
 
 // Set Variables for powT functions below
 var maxTransNonce = math.MaxInt64
-// Remove this
 var targetTrans = 8
+
+// newPowMempool
+// Forced hash requiring 00 at start
+// Returns *powMempool with new target and Mempool Struct
+// v0.0.10
+func newPowMempool(m *MinedMempool) *powMempool {
+	target := big.NewInt(1)
+	target.Lsh(target, uint(248)) // forced two 0's
+
+	pow := &powMempool{m, target}
+
+	return pow
+}
 
 // NewPOWTrans(transaction *Transaction)
 // sets Transaction.target of powTransaction{} from targetTrans
@@ -72,10 +122,36 @@ func NewPOWTrans(t *Transaction) *powTransaction {
 	return powT
 }
 
+// pow.prepMempool(nonce)
+// Joins all elements of MinedMempool, to make a []byte
+// Returns []byte
+// v0.0.10
+func (pow *powMempool) prepMempool(nonce int) []byte {
+	data := bytes.Join(
+		[][]byte{
+			IntToHex(pow.toMine.mempool.Timestamp),
+			[]byte(pow.toMine.mempool.Sender),
+			[]byte(pow.toMine.mempool.Receiver),
+			IntToHex(int64(pow.toMine.mempool.Amount)),
+			[]byte(pow.toMine.mempool.Type),
+			[]byte(pow.toMine.mempool.Name),
+			//IntToHex(int64(pow.toMine.mempool.ATPCost)),
+			pow.toMine.mempool.Signature,
+			IntToHex(pow.toMine.Timestamp),
+			[]byte(strconv.FormatBool(pow.toMine.IsValid)),
+			[]byte(pow.toMine.Rewards),
+			//IntToHex(int64(pow.toMine.ATPUsed)),
+			IntToHex(int64(nonce)),
+		},
+		[]byte{},
+	)
+	return data
+}
+
 // powT.prepareTransData(tnonce)
 // Joins all elements of *Transaction into bytes for hash
 // Returns []byte
-// remove this
+// deleting
 func (powT *powTransaction) prepareTransData(tnonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
@@ -149,7 +225,6 @@ func SliceTransaction(t *Transaction, st []*Transaction) []*Transaction {
 // null Transaction for "filling blocks"
 // testing only
 // will need updates on v0.0.8 (string for sender/receiver)
-// desroying by v0.1.0
 func bsTransaction() *Transaction {
 	a := KeyGen()
 	b := KeyGen()
@@ -192,7 +267,6 @@ func bsTransaction() *Transaction {
 }
 
 // AlphaNet Genesis use
-// Needs modification to a struct
 func AlphaGenesis() *Transaction {
 	var alpha *Transaction
 	alpha = &Transaction{1623289682, "", "", 0, "AlphaNet of MaxFlowChain, created for testing purposes on 6/9/2021, www.nytimes.com/2021/06/09/technology/bitcoin-untraceable-pipeline-ransomware.html issues 101", []byte{}, []byte{}, 0}
@@ -211,6 +285,25 @@ func AlphaGenesis() *Transaction {
 	file, _ := json.MarshalIndent(alpha, "", " ")
 	_ = ioutil.WriteFile(filename, file, 0644)
 
+	//        data, err := json.Marshal(alpha)
+	//        if err != nil {
+	//                fmt.Errorf("Couldn't Marshal AlphaNet Genesis Transaction, %v", err)
+	//        	}
+	//
+	//        db, err := setupDB()
+	//        if err != nil {
+	//                fmt.Errorf("Couldn't open mfc.db, %v", err)
+	//        	}
+	//        defer db.Close()
+
+	//        err = db.Update(func (tx *bolt.Tx) error {
+	//                err := tx.Bucket([]byte(transactionBucket)).Put(alpha.Hash, data)
+	//                if err != nil {
+	//                        return fmt.Errorf("Alpha Genesis did not insert into transactionBucket, code: %v", err)
+	//                	}
+	//                return nil
+	//        })
+	//
 	return alpha
 }
 

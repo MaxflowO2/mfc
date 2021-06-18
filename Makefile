@@ -11,15 +11,15 @@ BINARY_UNIX=$(BINARY_NAME)_unix
 all: test build
 build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
-	mkdir alpha/block
+#	mkdir alpha/block
 test:
 	$(GOTEST) -v ./...
 clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)
 	rm -f $(BINARY_UNIX)
-	rm -rf alpha/block
-	rm blockchain.db
+#	rm -rf alpha/block
+#	rm blockchain.db
 run:
 	$(GOBUILD) -o $(BINARY_NAME) -v ./...
 	./$(BINARY_NAME)

@@ -46,9 +46,9 @@ func (bc *Blockchain) SetTargetBits() int {
 	// This number will be modified over time, initally targetBits
 	var newTargetBits = 1
 	// Sets length of blocks for PoW Difficulty Scan
-	var targetBlocks = 120
+	var targetBlocks = 12
 	// Sets length of blocks per adjustment "aka epoch below"
-	var adjustBlocks = 60
+	var adjustBlocks = 6
 	// Sets tolerance of time adjustment, 5% is usually best
 	var plusMinus = 3
 	// -1 since we are immediately getting lastBlock of Blockchain
@@ -57,7 +57,7 @@ func (bc *Blockchain) SetTargetBits() int {
 	lastBlock := bci.Next()          // sets lastBlock
 	lastHeight := lastBlock.Height   // Returns Last Block Height
 	lastDiff := lastBlock.Difficulty // Returns Last Difficulty
-	//fmt.Printf("Last Difficulty: %v\n", lastDiff)
+	fmt.Printf("Last Difficulty: %v\n", lastDiff)
 	timeMeow := time.Now().Unix() // Yes a Super Troopers Reference
 	//fmt.Printf("timeMeow is: %v\n", timeMeow)
 	// finds the last timestamp of the targetBlock
@@ -104,7 +104,7 @@ func (bc *Blockchain) SetTargetBits() int {
 		} else {
 			newTargetBits = lastDiff
 		}
-		//fmt.Printf("newTargetBits now: %v\n", newTargetBits)
+		fmt.Printf("newTargetBits now: %v\n", newTargetBits)
 	}
 	return newTargetBits
 }
@@ -148,8 +148,8 @@ func (bc *Blockchain) AddBlock(trans []*Transaction) {
 	// For newTargetBits
 	newTarget := bc.SetTargetBits()
 	// New time Function
-	answer := bc.CheckTime()
-	if answer == true {
+//	answer := bc.CheckTime()
+//	if answer == true {
 		newBlock := NewBlock(trans, lastHash, lastHeight, newTarget)
 
 		err = bc.db.Update(func(tx *bolt.Tx) error {
@@ -168,7 +168,7 @@ func (bc *Blockchain) AddBlock(trans []*Transaction) {
 
 			return nil
 		})
-	} //else {
+//	} //else {
 		//fmt.Println("Too early for next block, standby")
 	//}
 }
