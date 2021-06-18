@@ -64,10 +64,12 @@ I've implemented a few other constructions that might be helpful:
 K12.SumXXX() produces an output length of desired length
 
 Current flavors are
+```
 Sum224(input []byte) - 28 byte length in []byte output
 Sum256(input []byte) - 32 byte length in []byte output
 Sum384(input []byte) - 48 byte length in []byte output
 Sum512(input []byte) - 64 byte length in []byte output
+```
 
 More to be developed soon
 
