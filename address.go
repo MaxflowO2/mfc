@@ -24,17 +24,18 @@ import (
 	"crypto/ed25519"
 	"github.com/MaxflowO2/mfc/K12"
 //	"log"
-//	"github.com/boltdb/bolt"
+	"github.com/boltdb/bolt"
 )
 
 // MFCAddress struct {}
 // Struct will be used throughout code
 // Will save to DB under Address Basket
 type MFCAddress struct {
-	MFCxAddy  string
-	PublicKey ed25519.PublicKey
-	// Adding nested struct []*Balance for DB values
-	//State []*Balance
+	MFCxAddy	string
+	PublicKey	ed25519.PublicKey
+	// New in v0.0.10+ Name is for contracts, State is your balance
+	Name 		string
+	State 		[]*Balance
 }
 
 // HashKeys(MFCKeys)
@@ -121,60 +122,61 @@ func DeserializeAddy(d []byte) *MFCAddress {
 	return &addy
 }
 
+var addressBucket = "Address"
+
 // AddAddress(mfc MFCAddress)
 // Adds MFCAddress to Bolt.DB
-// Method 1: MFCxAddy (string) as Key/Value as Serialize() in StringBucket
-// Logic, will print verbose in string, will hash with []byte
-//func AddAddress(mfc MFCAddress) {
-//	db, err := bolt.Open(dbFile, 0644, nil)
-//		if err != nil {
-//			fmt.Errorf("Could not load database file, %v\n", err)
-//		}
-//	defer db.Close()
-//
-//	err = db.Update(func(tx *bolt.Tx) error {
-//		bucket, err := tx.CreateBucketIfNotExists([]byte(addressBucket))
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = bucket.Put([]byte(mfc.MFCxAddy), mfc.Serialize())
-//		if err != nil {
-//			return err
-//		}
-//		return nil
-//	})
-//
-//	if err != nil {
-//		fmt.Errorf("Bucket error: %v\n", err)
-//
-//}
+// Method: Key/Value as []byte(MFCxAddy)/Serialize() in Bucket "Address"
+func (mfc *MFCAddress) ToBoltDB() {
+	db, err := bolt.Open(dbFile, 0644, nil)
+		if err != nil {
+			fmt.Errorf("Could not load database file, %v\n", err)
+		}
+	defer db.Close()
+
+	err = db.Update(func(tx *bolt.Tx) error {
+		bucket, err := tx.CreateBucketIfNotExists([]byte(addressBucket))
+		if err != nil {
+			return err
+		}
+
+		err = bucket.Put([]byte(mfc.MFCxAddy), mfc.Serialize())
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		fmt.Errorf("Bucket error: %v\n", err)
+	}
+}
 
 // RetrieveMFCAddress(s string)
 // Opens DB, finds address string s in StringBucket
 // Returns MFCAddress of user
-//func RetreiveMFCAddress(s string) *MFCAddress {
-//	db, err := bolt.Open(dbFile, 0644, nil)
-//		if err != nil {
-//			fmt.Errorf("Could not load %s, %v\n", dbFile, err)
-//		}
-//	defer db.Close()
-//
-//	var mfcaddy *MFCAddress
-//	err = db.View(func(tx *bolt.Tx) error {
-//		bucket := tx.Bucket([]byte(addressBucket))
-//		if bucket == nil {
-//			return fmt.Errorf("Bucket %q not found!\n", addressBucket)
-//		}
-//
-//		mfcaddy = DeserializeAddy(bucket.Get([]byte(s)))
-//
-//		return nil
-//	})
-//
-//	if err != nil {
-//		fmt.Errorf("Did not View(%s), code: %v\n", addressBucket, err)
-//	}
-//
-//	return mfcaddy
-//}
+func AddyFromBoltDB(s string) *MFCAddress {
+	db, err := bolt.Open(dbFile, 0644, nil)
+		if err != nil {
+			fmt.Errorf("Could not load %s, %v\n", dbFile, err)
+		}
+	defer db.Close()
+
+	var mfcaddy *MFCAddress
+	err = db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(addressBucket))
+		if bucket == nil {
+			return fmt.Errorf("Bucket %q not found!\n", addressBucket)
+		}
+
+		mfcaddy = DeserializeAddy(bucket.Get([]byte(s)))
+
+		return nil
+	})
+
+	if err != nil {
+		fmt.Errorf("Did not View(%s), code: %v\n", addressBucket, err)
+	}
+
+	return mfcaddy
+}

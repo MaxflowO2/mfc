@@ -18,7 +18,7 @@ package main
 
 import (
 	//	"time"
-	//	"fmt"
+	"fmt"
 	"os"
 )
 
@@ -63,6 +63,12 @@ func main() {
 	} else {
 		//		fmt.Println("MFCAddress.json was not found, generating Address.")
 		MakeAddress().ToFile()
+		addy := AddyFromFile()
+		addy.ToBoltDB()
+		addyTwo := AddyFromBoltDB(addy.MFCxAddy)
+		if &addy == addyTwo {
+			fmt.Println("Success")
+		}
 		//		addy := LoadAddress()
 		//		fmt.Printf("MFC Address is:\n%s\n\n", addy)
 	}

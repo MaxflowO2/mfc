@@ -1,0 +1,18 @@
+package main	
+
+func (b *Block) AddCapCoin() {
+	halving := 525960 * 4
+	maxvalue := 16
+	divisor := b.Height/halving
+	value := maxvalue/divisor++
+	answer := Balance{"Cap Coin", "Cap Coin", value}
+	// open MFCAddress for b.HashBy
+	// append that address with *Balance or add to it
+	// so search for it, and either append or changebal()
+}
+
+func (b *Block) AddFructose() {
+}
+
+func (b *Block) AddGlucose() {
+}
