@@ -124,7 +124,7 @@ func DeserializeAddy(d []byte) *MFCAddress {
 
 var addressBucket = "Address"
 
-// AddAddress(mfc MFCAddress)
+// mfc.ToBoltDB()
 // Adds MFCAddress to Bolt.DB
 // Method: Key/Value as []byte(MFCxAddy)/Serialize() in Bucket "Address"
 func (mfc *MFCAddress) ToBoltDB() {

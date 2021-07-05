@@ -17,7 +17,6 @@
 package main
 
 import (
-	//	"time"
 	"fmt"
 	"os"
 )
@@ -87,7 +86,8 @@ func main() {
 	//	AlphaGenesisBlock()
 	bc := NewBlockchain()
 	defer bc.db.Close()
-
+	yo := hashDB()
+	fmt.Printf("the database hash is....\n%s\n", yo)
 	cli := CLI{bc}
 	cli.Run()
 }

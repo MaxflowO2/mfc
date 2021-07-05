@@ -68,6 +68,7 @@ func AdjustBal(u string, t string, v float64) {
 	}
 	// now state is changed
 	// update database aka write to Bolt.DB
+	value.ToBoltDB()
 }
 
 func GetName(t string) string {
